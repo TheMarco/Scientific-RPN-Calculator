@@ -1,0 +1,24 @@
+[
+{"source": "lib\/json.js"},
+{"source": "lib\/utils.js"},
+{"source": "lib\/list.js"},
+{"source": "app\/models\/calculator.js"},
+{"source": "app\/controllers\/scientificcalculator-assistant.js"},
+{"source": "app\/controllers\/app-assistant.js"},
+{
+    "source": "app\/controllers\/about-assistant.js",
+    "scenes": "about"
+  },
+{
+    "source": "app\/controllers\/preferences-assistant.js",
+    "scenes": "preferences"
+  },
+{
+    "source": "app\/controllers\/conversion-assistant.js",
+    "scenes": "conversion"
+  },
+{
+    "source": "app\/controllers\/stackinspector-assistant.js",
+    "scenes": "stackinspector"
+  }
+]

@@ -1,0 +1,12 @@
+{
+    "title": "Scientific Calculator",
+    "version": "1.0.14",
+    "type": "web",
+    "main": "index.html",
+    "id": "com.palm.app.scientificcalculator",
+    "icon": "icon.png",
+    "vendor": "Marco van Hylckama Vlieg",
+    "vendorurl": "http://www.i-marco.nl/",
+    "visible": true,
+    "removable": true
+}

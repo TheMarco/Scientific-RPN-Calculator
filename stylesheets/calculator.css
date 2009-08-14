@@ -1,0 +1,271 @@
+/* Copyright 2009 by Marco van Hylckama Vlieg */
+
+#display {
+	width: 306px;
+	height: 56px;
+	margin: 5px auto 0 auto;
+	background: url(../images/display2.png);
+	overflow: hidden;
+}
+#display-overlay {
+	background: url(../images/display_overlay.png);
+	position: absolute;
+	width: 306px;
+	height: 56px;
+	top: 5px;
+	left: 8px;
+	z-index: 10;
+}
+#scientificcalculator-main, #about {
+	max-height: 456px;
+	min-height: 424px;
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	width: 320px;
+	border-width: 30px 0 30px 0;
+	background: url(../images/background.png);
+	-webkit-box-sizing: border-box;	
+}
+
+#about {
+	color: #ccc;
+}
+
+#about a {
+	color: #fff;
+	font-weight: bold;
+}
+
+.aboutcontent {
+	font-size: 14px;
+	padding: 45px 10px 10px 10px;
+	text-align: center;
+}
+.aboutcontent p {
+	margin-bottom: 20px;
+}
+#copyright {
+	font-size: 11px;
+}
+
+#keys {
+	margin-left: 8px;
+	margin-top: -6px;
+}
+
+/* labels */
+
+.button {
+	width: 60px;
+	height: 48px;
+	background-image: url(../images/buttons_raised.png) ;
+	background-position: -8px -70px;
+	float: left;
+}
+
+.button:active {
+	background-image: url(../images/buttons_sunken.png) ;	
+}
+
+#tenx {background-position: -68px -70px;}
+#conv {background-position: -128px -70px;}
+#tohex {background-position: -188px -70px;}
+#tobin {background-position: -248px -70px;}
+
+#hyp{background-position:-8px -120px;}
+#sin{background-position:-68px -120px;}
+#cos{background-position:-128px -120px;}
+#tan{background-position:-188px -120px;}
+#pi{background-position:-248px -120px;}
+
+#xsquare{background-position:-8px -170px;}
+#xfac{background-position:-68px -170px;}
+#sqrt{background-position:-128px -170px;}
+#onedivx{background-position:-188px -170px;}
+#percent{background-position:-248px -170px;}
+
+#f{background-position:-8px -220px;}
+#g{background-position:-68px -220px;}
+#sto{background-position:-128px -220px;}
+#rcl{background-position:-188px -220px;}
+#undo{background-position:-248px -220px;}
+
+#seven{background-position:-8px -270px;}
+#eight{background-position:-68px -270px;}
+#nine{background-position:-128px -270px;}
+#backspace{background-position:-188px -270px;}
+#sigmaplus{background-position:-248px -270px;}
+
+#four{background-position:-8px -320px;}
+#five{background-position:-68px -320px;}
+#six{background-position:-128px -320px;}
+#multiply{background-position:-188px -320px;}
+#divide{background-position:-248px -320px;}
+
+#one{background-position:-8px -370px;}
+#two{background-position:-68px -370px;}
+#three{background-position:-128px -370px;}
+#plus{background-position:-188px -370px;}
+#minus{background-position:-248px -370px;}
+
+#zero{background-position:-8px -420px;}
+#dot{background-position:-68px -420px;}
+#eex{background-position:-128px -420px;}
+#chs{background-position:-188px -420px;}
+#enter{background-position:-248px -420px;}
+
+#firstline {
+	font-size: 20px;
+	position: absolute;
+	text-align: right;
+	top: 22px;
+	right: 13px;
+}
+#infoline {
+		font-size: 10px;
+		position: absolute;
+		text-align: left;
+		top:12px;
+		left: 17px;
+		color: #333;
+		z-index: 99;
+		font-family: "Courier New";
+		font-weight: bold;
+}
+#infoline .indicator {
+	display: block;
+	float: left;
+	width: 72px;
+	height: 15px;
+	margin-right: 3px;
+}
+#modes {
+	width: 181px;
+	height: 10px;
+	position: absolute;
+	left: 15px;
+	top: 45px;
+	background: url(../images/modes.png);
+	overflow: hidden;
+}
+.digit {
+	width: 14px;
+	height: 16px;
+	display: inline-block;
+	background: url(../images/finaldigits.png);
+	background-position: -140px -16px;
+	text-indent: -9999px;
+}
+
+#mode_deg, #mode_rad, #mode_grad, #mode_f, #mode_g, #mode_fix, #mode_sci, #mode_eng, #mode_hyp, #mode_sto {
+	background: url(../images/modes.png);
+	height: 10px;
+	float: left;
+	margin: 0;
+	padding: 0;
+}
+#mode_deg {
+	width: 21px;
+	background-position: 0 0;
+}
+#mode_rad {
+	width: 22px;
+	background-position: -21px 0;
+}
+#mode_grad {
+	width: 28px;
+	background-position: -43px 0;
+}
+#mode_f {
+	width: 6px;
+	background-position: -71px 0;
+}
+#mode_g {
+	width: 8px;
+	background-position: -77px 0;
+}
+#mode_fix {
+	width: 16px;
+	background-position: -85px 0;
+}
+#mode_sci {
+	width: 18px;
+	background-position: -101px 0;
+}
+#mode_eng {
+	width: 22px;
+	background-position: -119px 0;
+}
+#mode_hyp {
+	width: 21px;
+	background-position: -141px 0;
+}
+#mode_sto {
+	width: 19px;
+	background-position: -162px 0;
+}
+
+#mode_deg.on {background-position: 0 -9px;}
+#mode_rad.on {background-position: -21px -18px;}
+#mode_grad.on {background-position: -43px -27px;}
+#mode_f.on {background-position: -71px -36px;}
+#mode_g.on {background-position: -77px -45px;}
+#mode_fix.on {background-position: -85px -54px;}
+#mode_sci.on {background-position: -101px -63px;}
+#mode_eng.on {background-position: -119px -72px;}
+#mode_hyp.on {background-position: -141px -81px;}
+#mode_sto.on {background-position: -162px -90px;}
+
+#firstline .n0 {background-position: -126px 0;}
+#firstline .n1 {background-position: 0 0;}
+#firstline .n2 {background-position: -14px 0;}
+#firstline .n3 {background-position: -28px 0;}
+#firstline .n4 {background-position: -42px 0;}
+#firstline .n5 {background-position: -56px 0;}
+#firstline .n6 {background-position: -70px 0;}
+#firstline .n7 {background-position: -84px 0;}
+#firstline .n8 {background-position: -98px 0;}
+#firstline .n9 {background-position: -112px 0;}
+#firstline .na {background-position: -140px 0;}
+#firstline .nb {background-position: -154px -16px;}
+#firstline .nc {background-position: -154px 0;}
+#firstline .nd {background-position: -168px -16px;}
+#firstline .ne {background-position: -168px 0;}
+#firstline .nf {background-position: -182px 0;}
+#firstline .nr {background-position: -196px 0;}
+#firstline .nminus {background-position: -210px 0;}
+
+#firstline .dotn0 {background-position: -126px -16px;}
+#firstline .dotn1 {background-position: 0 -16px;}
+#firstline .dotn2 {background-position: -14px -16px;}
+#firstline .dotn3 {background-position: -28px -16px;}
+#firstline .dotn4 {background-position: -42px -16px;}
+#firstline .dotn5 {background-position: -56px -16px;}
+#firstline .dotn6 {background-position: -70px -16px;}
+#firstline .dotn7 {background-position: -84px -16px;}
+#firstline .dotn8 {background-position: -98px -16px;}
+#firstline .dotn9 {background-position: -112px -16px;}
+
+.halfbutton {
+	width: 150px;
+	float: left;
+}
+.pref label {
+	float: left; line-height: 30px;font-size:18px;display:block;padding-top: 10px;padding-left: 10px;
+}
+
+#stack div.n {
+	font-weight: bold;
+	margin-top: 15px;
+	float: left;
+}
+#stack label {
+	color: #F5B800;
+	margin-top: 15px;
+}
+#stackinspector .info {
+	padding-top: 15px;
+	text-align: left;
+}
