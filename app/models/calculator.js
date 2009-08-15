@@ -900,15 +900,17 @@ var Calculator = Class.create({
 				this.operationDone = 1;
 				break;
 				case 'percent':
+				var xVal = this.Stack.cards[0];
+				var yVal = this.Stack.cards[1];
 				this.lastx = this.Stack.cards[0];
 				if(this.mode_g == true) {
 					this.Stack.pushX();
-					this.Stack.cards[0] = (this.Stack.cards[1] - this.Stack.cards[0]) / (this.Stack.cards[0] * 100);
+					this.Stack.cards[0] = (yVal - xVal) / (xVal * 100);
 					this.resetModes();
 				}
 				else {
 					this.Stack.pushX();
-					this.Stack.cards[0] = (this.Stack.cards[1] / 100) * this.Stack.cards[0];
+					this.Stack.cards[0] = (yVal / 100) * xVal;
 				}
 				this.displayBuffer = this.Stack.cards[0].toString();
 				this.operationDone = 1;
