@@ -895,7 +895,7 @@ var Calculator = Class.create({
 				var yVal = this.Stack.cards[1];
 				this.lastx = this.Stack.cards[0];
 				if(this.mode_g == true) {
-					this.Stack.cards[0] = (yVal - xVal) / (xVal * 100);
+					this.Stack.cards[0] = ((xVal - yVal) / yVal) * 100;
 					this.resetModes();
 				}
 				else {
