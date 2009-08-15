@@ -928,17 +928,28 @@ var Calculator = Class.create({
 				}
 				break;	
 				case 'backspace':			
-				if(this.operationDone || this.enterPressed) {
+				
+				if(this.enterPressed === 1) {
 					this.displayBuffer = '';
+					this.Stack.cards[0] = 0;
+					this.enterPressed = 0;
 					return this.displayBuffer;
 				}
-				this.displayBuffer = this.displayBuffer.substring(0,this.displayBuffer.length - 1);
-				if(this.displayBuffer.length > 0) {
-					this.Stack.cards[0] = this.displayBuffer;
+				if(this.operationDone === 1) {
+					this.displayBuffer = '';
+					this.Stack.cards[0] = 0;
+					this.operationDone = 0;
+					return this.displayBuffer;
 				}
-				else {
+				if(this.displayBuffer.length > 0 && this.displayBuffer !== 0) {
+					this.displayBuffer = this.displayBuffer.substring(0,this.displayBuffer.length - 1);
+					this.Stack.cards[0] = this.displayBuffer;
+					return this.displayBuffer;
+				}
+				if(this.displayBuffer.length === 0) {
 					this.Stack.dropOne(0);
 					this.displayBuffer = '';
+					return this.displayBuffer
 				}
 				break;
 				case 'eex':
