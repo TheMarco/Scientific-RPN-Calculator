@@ -1,0 +1,6 @@
+Building this package from source:
+
+1: Get the Palm Pre SDK
+2: place the entire tree in a directory (for example Scientific-RPN-Calculator/)
+3: run: palm-package Scientific-RPN-Calculator (outside of this directory)
+4: install the generated .ipk file in your preferred way.

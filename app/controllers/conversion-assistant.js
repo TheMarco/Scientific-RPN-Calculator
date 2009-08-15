@@ -1,29 +1,29 @@
 var ConversionAssistant = Class.create({
-	
+
 	initialize : function(calculator) {
 		this.calculator = calculator;
-  	},
+	},
 	setup: function() {		
 		this.controller.setupWidget("clearconversion",		
-					this.attributes = {
-		                disabledProperty: 'disabled'
-		                },	
-		            this.model = {
-		                buttonLabel : "Close",
-		                buttonClass: 'secondary',
-		                disabled: false
-		            });
+		this.attributes = {
+			disabledProperty: 'disabled'
+		},	
+		this.model = {
+			buttonLabel : "Close",
+			buttonClass: 'secondary',
+			disabled: false
+		});
 		this.controller.listen('clearconversion', Mojo.Event.tap, this.onBackClick.bindAsEventListener(this));
 		this.controller.setupWidget("apply",		
-					this.attributes = {
-		                disabledProperty: 'disabled'
-		                },
-		
-		            this.model = {
-		                buttonLabel : "Apply",
-		                buttonClass: 'primary',
-		                disabled: false
-		            });
+		this.attributes = {
+			disabledProperty: 'disabled'
+		},
+
+		this.model = {
+			buttonLabel : "Apply",
+			buttonClass: 'primary',
+			disabled: false
+		});
 		this.controller.listen('apply', Mojo.Event.tap, this.onApplyClick.bindAsEventListener(this));
 
 		this.property = new Array();
@@ -88,10 +88,10 @@ var ConversionAssistant = Class.create({
 
 		this.property[14] = "Temperature";
 		this.unit[14] = new Array("Degrees Celsius ('C)", "Degrees Fahrenheit ('F)", "Degrees Kelvin ('K)", "Degrees Rankine ('R)");
-		
+
 		// factor for [1] and [3] explicitly set wrong to be able to distinguish the values
 		// 3 = 0.5555555555 and 2 = 1
-		
+
 		this.factor[14] = new Array(1,  2, 3, 0.555555555555);
 		this.tempIncrement = new Array(0, -32, -273.15, -491.67);
 
@@ -114,9 +114,9 @@ var ConversionAssistant = Class.create({
 		this.property[19] = "Volume Flow";
 		this.unit[19] = new Array("Cubic meter/second", "Cubic foot/second", "Cubic foot/minute", "Cubic inches/minute", "Gallons (US,liq)/minute)");
 		this.factor[19] = new Array(1, .02831685, .0004719474, 2.731177E-7, 6.309020E-05);
-		
+
 		var propertychoices = [];
-		
+
 		for(i=0;i<this.property.length;i++) {
 			propertychoices.push({label: this.property[i], value: i});
 		}
@@ -125,23 +125,23 @@ var ConversionAssistant = Class.create({
 			choices: propertychoices
 		};
 		this.controller.setupWidget("property",{}, this.propertymodel);
-		
+
 		Mojo.Event.listen($("property"),Mojo.Event.propertyChange,this.onPropertyChange.bind(this));
-		
+
 		var fromitems = [];
 		for(i=0;i<this.unit[this.calculator.conversionConfig['propertyindex']].length;i++) {
 			fromitems.push({label: this.unit[this.calculator.conversionConfig['propertyindex']][i], value: this.factor[this.calculator.conversionConfig['propertyindex']][i]});
 		}
-				
+
 		toFactorValue = this.calculator.conversionConfig['tovalue'];
 		fromFactorValue = this.calculator.conversionConfig['fromvalue'];
-				
+
 		this.frommodel={value: fromFactorValue, choices: fromitems};
 		this.tomodel={value: toFactorValue, choices: fromitems};
 		this.controller.setupWidget("convertfrom",{},this.frommodel);		
 		this.controller.setupWidget("convertto",{},this.tomodel);
 	},
-	
+
 	onPropertyChange: function() {
 		var selectedItem = this.propertymodel.value;
 		var newfromitems = [];
@@ -156,49 +156,49 @@ var ConversionAssistant = Class.create({
 		this.controller.modelChanged(this.frommodel, this); 
 		this.controller.modelChanged(this.tomodel, this); 
 	},
-		
+
 	onBackClick: function(event) {
 		this.controller.stageController.popScene();
 	},
 	onApplyClick: function(event) {
 
-    // set to value in case nothing has changed for the property
+		// set to value in case nothing has changed for the property
 
-    if(typeof(this.propertymodel.value) !== 'number') {
-		for(i=0;i<this.property.length;i++) {
-			if(this.property[i] === this.propertymodel.value) {
-				this.propertymodel.value = i;
+		if(typeof(this.propertymodel.value) !== 'number') {
+			for(i=0;i<this.property.length;i++) {
+				if(this.property[i] === this.propertymodel.value) {
+					this.propertymodel.value = i;
+					break;
+				}
+			}
+		}
+
+		var convertfromindex = '';
+		for(i=0;i<this.unit[this.propertymodel.value].length;i++) {
+
+			if(this.factor[this.propertymodel.value][i] == this.frommodel.value) {
+				convertfromindex = i;
 				break;
 			}
 		}
-	}
 
-	var convertfromindex = '';
-	for(i=0;i<this.unit[this.propertymodel.value].length;i++) {
-		
-		if(this.factor[this.propertymodel.value][i] == this.frommodel.value) {
-			convertfromindex = i;
-			break;
+
+		var converttoindex = '';
+		for(i=0;i<this.unit[this.propertymodel.value].length;i++) {		
+			if(this.factor[this.propertymodel.value][i] == this.tomodel.value) {
+				converttoindex = i;
+				break;
+			}
 		}
-	}
 
-
-	var converttoindex = '';
-	for(i=0;i<this.unit[this.propertymodel.value].length;i++) {		
-		if(this.factor[this.propertymodel.value][i] == this.tomodel.value) {
-			converttoindex = i;
-			break;
-		}
-	}
-
- 	this.calculator.setConversions(
-	this.frommodel.value, 
-	this.tomodel.value, 
-	this.property[$('property').getElementsByTagName('INPUT')[0].value], 
-	this.propertymodel.value, 
-	this.unit[this.propertymodel.value][convertfromindex], 
-	this.unit[this.propertymodel.value][converttoindex]
-	);
+		this.calculator.setConversions(
+			this.frommodel.value, 
+			this.tomodel.value, 
+			this.property[$('property').getElementsByTagName('INPUT')[0].value], 
+			this.propertymodel.value, 
+			this.unit[this.propertymodel.value][convertfromindex], 
+			this.unit[this.propertymodel.value][converttoindex]
+		);
 
 		this.controller.stageController.popScene();
 	}

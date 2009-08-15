@@ -1,8 +1,8 @@
 var PreferencesAssistant = Class.create({
-	
+
 	initialize : function(calculator) {
 		this.calculator = calculator;
-  	},
+	},
 
 	setup: function() {
 		var val = 0;
@@ -14,39 +14,39 @@ var PreferencesAssistant = Class.create({
 			display = 1;
 		}		
 		this.controller.setupWidget("clearprefs",
-		
-					this.attributes = {
-		                disabledProperty: 'disabled'
-		                },
-		
-		            this.model = {
-		                buttonLabel : "Dismiss",
-		                buttonClass: '',
-		                disabled: false
-		            });
-		
+
+		this.attributes = {
+			disabledProperty: 'disabled'
+		},
+
+		this.model = {
+			buttonLabel : "Dismiss",
+			buttonClass: '',
+			disabled: false
+		});
+
 		this.controller.setupWidget("haptictoggle",		
-					this.attributes = {
-		                choices: [
-			            {label: "Enabled", value: 1},
-			            {label: "Disabled", value: 2},
-			            ]
-		                },	
-		           	this.model = {
-						value: val,
-						disabled: false
-				    });		
+		this.attributes = {
+			choices: [
+			{label: "Enabled", value: 1},
+			{label: "Disabled", value: 2},
+			]
+		},	
+		this.model = {
+			value: val,
+			disabled: false
+		});		
 		this.controller.setupWidget("stacktoggle",		
-					this.attributes = {
-		                choices: [
-			            {label: "Enabled", value: 1},
-			            {label: "Disabled", value: 2},
-			            ]
-		                },	
-		           	this.model = {
-						value: display,
-						disabled: false
-				    });
+		this.attributes = {
+			choices: [
+			{label: "Enabled", value: 1},
+			{label: "Disabled", value: 2},
+			]
+		},	
+		this.model = {
+			value: display,
+			disabled: false
+		});
 		this.controller.listen('haptictoggle', Mojo.Event.propertyChange, this.onHapticChange.bindAsEventListener(this));
 		this.controller.listen('stacktoggle', Mojo.Event.propertyChange, this.onStackDisplayChange.bindAsEventListener(this));
 		this.controller.listen('clearprefs', Mojo.Event.tap, this.onBackClick.bindAsEventListener(this));

@@ -58,7 +58,7 @@ var Calculator = Class.create({
 				this.cards[2] = this.cards[1];
 				this.cards[1] = this.cards[0];
 			},
-			popY: function(data) {
+			dropOne: function(data) {
 				this.fillundostack();
 				this.cards[0] = data;
 				this.cards[1] = this.cards[2];
@@ -94,7 +94,7 @@ var Calculator = Class.create({
 			}
 		};		
 	},
-	
+
 	setHapticPrefs: function(value) {
 		if(value) {
 			this.hapticFeedback = true;
@@ -115,13 +115,7 @@ var Calculator = Class.create({
 	},
 	setConversions: function(from, to, property, propertyindex, fromvalue, tovalue) {		
 		// deal with unchanged values
-		
-		console.log(JSON.stringify(this.conversionConfig));
-		
-		console.log('got ' + from + ' ' + to + ' ' + property + ' ' + propertyindex + ' ' + fromvalue + ' ' + tovalue);
 
-
-		
 		if(property === undefined) {
 			property = this.conversionConfig['property'];
 		}
@@ -137,7 +131,7 @@ var Calculator = Class.create({
 		if(!isFinite(to)) {
 			to = this.conversionConfig['tofactor'];
 		}
-		
+
 		this.conversionConfig = {};
 		this.conversionConfig['fromfactor'] = from;
 		this.conversionConfig['tofactor'] = to;
@@ -145,10 +139,8 @@ var Calculator = Class.create({
 		this.conversionConfig['propertyindex'] = propertyindex;
 		this.conversionConfig['fromvalue'] = fromvalue;
 		this.conversionConfig['tovalue'] = tovalue;
-		console.log(JSON.stringify(this.conversionConfig));
-		
 		this.db.simpleAdd("conversionconfig", JSON.stringify(this.conversionConfig), function(){}, function(){});
-		
+
 	},
 	addStatItem: function() {
 		this.statisticsregisters.push({'valX': this.Stack.cards[0], 'valY': this.Stack.cards[1]});
@@ -168,7 +160,7 @@ var Calculator = Class.create({
 		this.statisticsregisters = newRegisters;
 		this.calculateStatItems();
 	},
-	
+
 	calculateStatItems: function() {
 		for(i=2;i<8;i++) {
 			this.memoryregisters['r' + i] = 0;
@@ -183,25 +175,25 @@ var Calculator = Class.create({
 		}	
 		this.db.simpleAdd("memoryregisters", JSON.stringify(this.memoryregisters));
 	},
-	
+
 	factorial: function(n) {
-	if ((n == 0) || (n == 1))
-	    return 1;
-	   else {
-	      result = (n * this.factorial(n-1) );
-	      return result;
-	   }
+		if ((n == 0) || (n == 1))
+		return 1;
+		else {
+			result = (n * this.factorial(n-1) );
+			return result;
+		}
 	},
-	
+
 	resetModes: function() {
 		$('mode_g').removeClassName('on');
 		$('mode_f').removeClassName('on');
 		this.mode_f = false;
 		this.mode_g = false;
 	},
-	
+
 	getDisplayBuffer: function() {
-		
+
 		var data = this.displayBuffer.toString();
 		data = data.replace(new RegExp(/^\./),"");
 		data = data.replace(new RegExp(/\.$/),"");	
@@ -209,9 +201,9 @@ var Calculator = Class.create({
 		if(data.indexOf('e') > -1) {
 			return data;
 		}
-		
+
 		// remove possible trailing dot
-		
+
 		// deal with rounding better (attempt anyway)
 		data = Math.round(data * 1000000000);
 		data = data / 1000000000;
@@ -223,15 +215,15 @@ var Calculator = Class.create({
 			data = data.toString();
 		}
 		return data;
-		
+
 	},
-	
+
 	round: function(number) {
 		// try to deal with stupid rounding errors
 		return (Math.round(parseFloat(number) * Math.pow(10, 12)) / Math.pow(10, 12));
 	},
-	
-	
+
+
 	memToJSON: function() {
 		var obj = {};
 		for(i=0;i<9;i++) {
@@ -242,7 +234,7 @@ var Calculator = Class.create({
 		}
 		return JSON.stringify(obj);
 	},
-	
+
 	handleStorage: function(type) {
 		if(this.stopressed) {
 			if(type !== 'dot') {
@@ -256,10 +248,10 @@ var Calculator = Class.create({
 		if(this.rclpressed) {
 			if(type !== 'dot') {
 				if( this.memoryregisters['r' + Calculator.keyStrokes[type]] !== undefined) {
-				this.Stack.pushX();
-				this.Stack.cards[0] = this.memoryregisters['r' + Calculator.keyStrokes[type]];
-				this.displayBuffer = this.Stack.cards[0];
-				//this.enterPressed = 1;
+					this.Stack.pushX();
+					this.Stack.cards[0] = this.memoryregisters['r' + Calculator.keyStrokes[type]];
+					this.displayBuffer = this.Stack.cards[0];
+					//this.enterPressed = 1;
 				}					
 			}
 			this.rclpressed = false;
@@ -267,7 +259,7 @@ var Calculator = Class.create({
 		}
 		return 'NOOP';
 	},
-	
+
 	handleFIX: function(type) {
 		if(this.fixpressed) {
 			if(type !== 'dot') {
@@ -284,9 +276,9 @@ var Calculator = Class.create({
 			return 'NOOP';
 		}
 	},
-	
+
 	handleNumbersWithFunctions: function(type) {
-		
+
 		if(type === 'seven' && this.mode_g == true) {
 			this.cmode = 'deg';
 			this.conversion = Math.PI/180.0;
@@ -298,13 +290,13 @@ var Calculator = Class.create({
 		}
 
 		if(type === 'seven' && this.mode_f == true) {				
-			this.Stack.popY(this.factorial(this.Stack.cards[1]) / (this.factorial((this.Stack.cards[1] - this.Stack.cards[0]))));
+			this.Stack.dropOne(this.factorial(this.Stack.cards[1]) / (this.factorial((this.Stack.cards[1] - this.Stack.cards[0]))));
 			this.operationDone = 1;
 			this.resetModes();
 			this.displayBuffer = this.Stack.cards[0];
 			return this.getDisplayBuffer();
 		}
-		
+
 		if(type === 'eight' && this.mode_g == true) {
 			this.cmode = 'rad';
 			this.conversion = '1.0';
@@ -314,15 +306,15 @@ var Calculator = Class.create({
 			$('mode_grad').removeClassName('on');
 			return this.getDisplayBuffer();
 		}
-		
+
 		if(type === 'eight' && this.mode_f == true) {
-			this.Stack.popY(this.factorial(this.Stack.cards[1]) / (this.factorial(this.Stack.cards[0]) * this.factorial((this.Stack.cards[1] - this.Stack.cards[0]))));
+			this.Stack.dropOne(this.factorial(this.Stack.cards[1]) / (this.factorial(this.Stack.cards[0]) * this.factorial((this.Stack.cards[1] - this.Stack.cards[0]))));
 			this.operationDone = 1;
 			this.resetModes();
 			this.displayBuffer = this.Stack.cards[0];
 			return this.getDisplayBuffer();	
 		}
-		
+
 		if(type === 'nine' && this.mode_g == true) {
 			this.cmode = 'grad';
 			this.conversion = Math.PI/200.0;
@@ -332,8 +324,8 @@ var Calculator = Class.create({
 			$('mode_grad').addClassName('on');
 			return this.getDisplayBuffer();
 		}
-		
-		
+
+
 		if(type === 'four' && this.mode_g == true) {
 			$('mode_fix').addClassName('on');
 			$('mode_g').removeClassName('on');
@@ -344,7 +336,7 @@ var Calculator = Class.create({
 		}
 		return 'NOOP';
 	},
-	
+
 	handleDot: function(type) {
 		if(type === 'dot')	{
 			if(this.enterPressed) {
@@ -353,7 +345,7 @@ var Calculator = Class.create({
 				this.displayBuffer = '0.';
 				return this.displayBuffer;
 			}
-			
+
 			if(this.operationDone) {
 				this.operationDone = false;
 				this.Stack.pushX();
@@ -363,7 +355,7 @@ var Calculator = Class.create({
 				return this.displayBuffer;
 			}
 
-			
+
 			if(this.displayBuffer.toString().length !== 0) { 
 				if(this.displayBuffer.toString().indexOf('.') < 0) {
 					this.displayBuffer = this.displayBuffer.toString() + Calculator.keyStrokes[type];
@@ -379,7 +371,7 @@ var Calculator = Class.create({
 		}
 		return 'NOOP';
 	},
-	
+
 	handleDoneAndEnter: function(type) {
 		if(this.operationDone === 1) {
 			this.Stack.pushX();
@@ -398,38 +390,38 @@ var Calculator = Class.create({
 		}
 		return 'NOOP';
 	},
-	
+
 	doCommand: function(type) {
 		var stringValX = this.Stack.cards[0].toString();
-		
+
 		if(Calculator.keyStrokes[type] !== undefined) {			
 			// memory ops
-			
+
 			var storageResult = this.handleStorage(type);
 			if(storageResult !== 'NOOP') {
 				return storageResult;
 			}
-						
+
 			// FIX
-			
+
 			var fixResult = this.handleFIX(type);
 			if(fixResult !== 'NOOP') {
 				return fixResult;
 			}
 			// numbers that have secondary or tertiary functions
-			
+
 			var numbersWithFunctionsResult = this.handleNumbersWithFunctions(type);
 			if(numbersWithFunctionsResult !== 'NOOP') {
 				return numbersWithFunctionsResult;
 			}			
 			// deal with dots
-			
+
 			var dotResult = this.handleDot(type);
 			if(dotResult !== 'NOOP') {
 				return dotResult;
 			}			
 			// deal with finished operations and the enter key
-			
+
 			var doneAndEnterResult = this.handleDoneAndEnter(type);
 			if(doneAndEnterResult !== 'NOOP') {
 				return doneAndEnterResult;
@@ -437,8 +429,8 @@ var Calculator = Class.create({
 			if(this.getDisplayBuffer().length > 14) {
 				// limit input to 14 digits	
 				return this.getDisplayBuffer();
-				}
-								
+			}
+
 			if (this.displayBuffer == '0' && type == 'zero') {
 				// make sure we can't type leading zeros					
 				return this.getDisplayBuffer();
@@ -452,11 +444,11 @@ var Calculator = Class.create({
 			switch(type) {			
 				case 'sigmaplus':
 				if(this.mode_f) {
-				this.statisticsregisters = [];
-				this.db.simpleAdd("statisticsregisters", JSON.stringify(this.statisticsregisters));
-				this.Stack.clst();	
-				this.resetModes();
-				this.displayBuffer = '';
+					this.statisticsregisters = [];
+					this.db.simpleAdd("statisticsregisters", JSON.stringify(this.statisticsregisters));
+					this.Stack.clst();	
+					this.resetModes();
+					this.displayBuffer = '';
 				}
 				else {
 					if(this.mode_g){
@@ -481,8 +473,8 @@ var Calculator = Class.create({
 					}
 				}
 				break;
-				
-				
+
+
 				case 'sto':
 				this.stopressed = true;
 				$('mode_sto').addClassName('on');
@@ -501,7 +493,7 @@ var Calculator = Class.create({
 				}
 				return this.getDisplayBuffer();
 				break;
-					
+
 				case 'f':
 				if(this.mode_f) {
 					$('mode_f').removeClassName('on');
@@ -550,28 +542,28 @@ var Calculator = Class.create({
 				break;
 				case 'plus':
 				this.lastx = this.Stack.cards[0];
-				this.Stack.popY(this.round(this.Stack.cards[0] + this.Stack.cards[1]));
+				this.Stack.dropOne(this.round(this.Stack.cards[0] + this.Stack.cards[1]));
 				this.Stack.stackDump();
 				this.displayBuffer = this.Stack.cards[0].toString();
 				this.operationDone = 1;
 				break;
 				case 'minus':
 				this.lastx = this.Stack.cards[0];
-				this.Stack.popY(this.round(this.Stack.cards[1] - this.Stack.cards[0]));
+				this.Stack.dropOne(this.round(this.Stack.cards[1] - this.Stack.cards[0]));
 				this.Stack.stackDump();
 				this.displayBuffer = this.Stack.cards[0].toString();
 				this.operationDone = 1;
 				break;
 				case 'multiply':
 				this.lastx = this.Stack.cards[0];
-				this.Stack.popY(this.round(this.Stack.cards[1] * this.Stack.cards[0]));
+				this.Stack.dropOne(this.round(this.Stack.cards[1] * this.Stack.cards[0]));
 				this.Stack.stackDump();
 				this.displayBuffer = this.Stack.cards[0].toString();
 				this.operationDone = 1;
 				break;
 				case 'divide':			
 				this.lastx = this.Stack.cards[0];
-				this.Stack.popY(this.round(this.Stack.cards[1] / this.Stack.cards[0]));
+				this.Stack.dropOne(this.round(this.Stack.cards[1] / this.Stack.cards[0]));
 				this.Stack.stackDump();
 				this.displayBuffer = this.Stack.cards[0].toString();
 				this.operationDone = 1;
@@ -588,7 +580,6 @@ var Calculator = Class.create({
 					this.operationDone = 1;
 				}
 				else {
-					console.log('UNDO');
 					this.Stack.undo();
 					this.operationDone = 1;
 					this.displayBuffer = this.Stack.cards[0].toString();
@@ -626,7 +617,7 @@ var Calculator = Class.create({
 				case 'conv':
 				if(this.mode_g) {
 					this.lastx = this.Stack.cards[0];
-					this.Stack.popY(Math.pow(this.Stack.cards[1], this.Stack.cards[0]));
+					this.Stack.dropOne(Math.pow(this.Stack.cards[1], this.Stack.cards[0]));
 					this.displayBuffer = this.Stack.cards[0].toString();
 					this.operationDone = 1;
 					this.resetModes();
@@ -641,8 +632,8 @@ var Calculator = Class.create({
 							return 'COMMAND-CONVERSION';
 						}
 						else {
-							
-											
+
+
 							// short circuit the temperatures. easiest for now
 							if(this.conversionConfig['property'] === 'Temperature') {
 								if(this.conversionConfig['fromvalue'] === "Degrees Celsius ('C)") {
@@ -674,7 +665,7 @@ var Calculator = Class.create({
 										this.Stack.cards[0] = this.Stack.cards[0] + 459.69;
 									}	
 								}
-							
+
 								if(this.conversionConfig['fromvalue'] === "Degrees Kelvin ('K)") {
 									if (this.conversionConfig['tovalue'] === "Degrees Celsius ('C)") {
 										this.Stack.cards[0] = this.Stack.cards[0] - 273.15;
@@ -689,7 +680,7 @@ var Calculator = Class.create({
 										this.Stack.cards[0] = (9/5) * this.Stack.cards[0] + 764.84;
 									}	
 								}
-							
+
 								if(this.conversionConfig['fromvalue'] === "Degrees Rankine ('R)") {
 									if (this.conversionConfig['tovalue'] === "Degrees Celsius ('C)") {
 										this.Stack.cards[0] = (5/9) * (this.Stack.cards[0] - 491.69);
@@ -774,7 +765,7 @@ var Calculator = Class.create({
 				else {
 					if(this.mode_hyp) {						
 						this.Stack.cards[0] = ((Math.exp(this.Stack.cards[0]) - Math.exp(-(this.Stack.cards[0])))/2) * this.conversion;
-						
+
 					}
 					else {
 						if(this.Stack.cards[0] == Math.PI) {
@@ -885,7 +876,7 @@ var Calculator = Class.create({
 				this.displayBuffer = this.Stack.cards[0].toString();
 				this.operationDone = 1;
 				break;
-				
+
 				case 'sqrt':
 				this.lastx = this.Stack.cards[0];
 				if(this.mode_g == true) {
@@ -904,12 +895,10 @@ var Calculator = Class.create({
 				var yVal = this.Stack.cards[1];
 				this.lastx = this.Stack.cards[0];
 				if(this.mode_g == true) {
-					this.Stack.pushX();
 					this.Stack.cards[0] = (yVal - xVal) / (xVal * 100);
 					this.resetModes();
 				}
 				else {
-					this.Stack.pushX();
 					this.Stack.cards[0] = (yVal / 100) * xVal;
 				}
 				this.displayBuffer = this.Stack.cards[0].toString();
@@ -939,18 +928,18 @@ var Calculator = Class.create({
 				}
 				break;	
 				case 'backspace':			
-					if(this.operationDone || this.enterPressed) {
-						this.displayBuffer = '';
-						return this.displayBuffer;
-					}
-					this.displayBuffer = this.displayBuffer.substring(0,this.displayBuffer.length - 1);
-					if(this.displayBuffer.length > 0) {
-						this.Stack.cards[0] = this.displayBuffer;
-					}
-					else {
-						this.Stack.cards[0] = 0;
-						this.displayBuffer = '';
-					}
+				if(this.operationDone || this.enterPressed) {
+					this.displayBuffer = '';
+					return this.displayBuffer;
+				}
+				this.displayBuffer = this.displayBuffer.substring(0,this.displayBuffer.length - 1);
+				if(this.displayBuffer.length > 0) {
+					this.Stack.cards[0] = this.displayBuffer;
+				}
+				else {
+					this.Stack.dropOne(0);
+					this.displayBuffer = '';
+				}
 				break;
 				case 'eex':
 				if(this.mode_g == true) {
@@ -972,13 +961,13 @@ var Calculator = Class.create({
 		this.stopressed = false;
 		this.rclpressed = false;
 		$('mode_sto').removeClassName('on');
-		
+
 		return this.getDisplayBuffer();
 	},
-	
+
 
 	getListFailed: function() {},
-	
+
 	getMemoryRegisters: function(value) {
 		if(value !== null) {
 			eval('this.memoryregisters = ' + value);
@@ -1012,7 +1001,7 @@ var Calculator = Class.create({
 		this.db.simpleGet("conversionconfig", this.getConversionConfig.bind(this), this.getListFailed);
 		this.db.simpleGet("hapticfeedback", this.getHapticFeedback.bind(this), this.getListFailed);
 		this.db.simpleGet("displaystack", this.getStackDisplay.bind(this), this.getListFailed);
-		
+
 	},
 });
 
@@ -1028,11 +1017,11 @@ Calculator.keyStrokes = {
 	'eight': 8,
 	'nine': 9,
 	'dot': '.'
-	};
-	
-	
+};
+
+
 Calculator.keyMap = {
-	 8 : 'backspace',
+	8 : 'backspace',
 	48 : 'zero',
 	49 : 'one',
 	50 : 'two',
