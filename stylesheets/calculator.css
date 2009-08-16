@@ -70,7 +70,7 @@
 }
 
 #tenx {background-position: -68px -70px;}
-#conv {background-position: -128px -70px;}
+#conv {background-position:-188px -170px;}
 #tohex {background-position: -188px -70px;}
 #tobin {background-position: -248px -70px;}
 
@@ -83,7 +83,7 @@
 #xsquare{background-position:-8px -170px;}
 #xfac{background-position:-68px -170px;}
 #sqrt{background-position:-128px -170px;}
-#onedivx{background-position:-188px -170px;}
+#onedivx{background-position: -128px -70px;}
 #percent{background-position:-248px -170px;}
 
 #f{background-position:-8px -220px;}
