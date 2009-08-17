@@ -278,7 +278,6 @@ var Calculator = Class.create({
 	},
 
 	handleNumbersWithFunctions: function(type) {
-
 		if(type === 'seven' && this.mode_g == true) {
 			this.cmode = 'deg';
 			this.conversion = Math.PI/180.0;
@@ -324,7 +323,29 @@ var Calculator = Class.create({
 			$('mode_grad').addClassName('on');
 			return this.getDisplayBuffer();
 		}
-
+		if(type === 'nine' && this.mode_f == true) {
+			// linear regression
+			this.calculateStatItems();
+			var n = this.memoryregisters['r2'];
+			var sxy = this.memoryregisters['r7'];
+			var sx = this.memoryregisters['r3'];
+			var sy = this.memoryregisters['r5'];
+			var sxsquare = this.memoryregisters['r4'];
+			var sysquare = this.memoryregisters['r6'];
+			//slope
+			var m = ((n * sxy) - (sx * sy)) / ((n * sxsquare) - Math.pow(sx,2));
+			//y intercept
+			var b = (sy - (m * sx)) / n;
+			this.Stack.pushX();
+			this.Stack.pushX();
+			this.Stack.cards[1] = m;
+			this.Stack.cards[0] = b;
+			this.displayBuffer = this.Stack.cards[0].toString();
+			this.operationDone = 1;
+			this.resetModes();
+			return this.displayBuffer;
+			
+		}
 
 		if(type === 'four' && this.mode_g == true) {
 			$('mode_fix').addClassName('on');
@@ -393,7 +414,6 @@ var Calculator = Class.create({
 
 	doCommand: function(type) {
 		var stringValX = this.Stack.cards[0].toString();
-
 		if(Calculator.keyStrokes[type] !== undefined) {			
 			// memory ops
 
@@ -409,13 +429,11 @@ var Calculator = Class.create({
 				return fixResult;
 			}
 			// numbers that have secondary or tertiary functions
-
 			var numbersWithFunctionsResult = this.handleNumbersWithFunctions(type);
 			if(numbersWithFunctionsResult !== 'NOOP') {
 				return numbersWithFunctionsResult;
 			}			
 			// deal with dots
-
 			var dotResult = this.handleDot(type);
 			if(dotResult !== 'NOOP') {
 				return dotResult;
@@ -929,19 +947,68 @@ var Calculator = Class.create({
 				break;	
 				case 'backspace':			
 				
+				if(this.mode_g == true) {
+					
+					var meanx = this.memoryregisters['r3'] / this.memoryregisters['r2'];
+					var meany = this.memoryregisters['r5'] / this.memoryregisters['r2'];
+					var sumofitemsminusmeanxsquare = 0;
+					var sumofitemsminusmeanysquare = 0;
+					for(i=0;i<this.statisticsregisters.length;i++) {
+						sumofitemsminusmeanxsquare = sumofitemsminusmeanxsquare + Math.pow((this.statisticsregisters[i].valX - meanx), 2);
+						sumofitemsminusmeanysquare = sumofitemsminusmeanysquare + Math.pow((this.statisticsregisters[i].valY - meany), 2);
+					}
+					var sdx = Math.sqrt(sumofitemsminusmeanxsquare / this.memoryregisters['r2']);
+					var sdy = Math.sqrt(sumofitemsminusmeanysquare / this.memoryregisters['r2']);
+					this.Stack.pushX();
+					this.Stack.pushX();					
+					this.Stack.cards[0] = sdx;
+					this.Stack.cards[1] = sdy;
+					this.displayBuffer = sdx;
+					this.resetModes();
+					this.operationDone = 1;
+					return this.getDisplayBuffer();
+				}
+				
+				if(this.mode_f == true) {
+					this.calculateStatItems();
+					var n = this.memoryregisters['r2'];
+					var sxy = this.memoryregisters['r7'];
+					var sx = this.memoryregisters['r3'];
+					var sy = this.memoryregisters['r5'];
+					var sxsquare = this.memoryregisters['r4'];
+					var sysquare = this.memoryregisters['r6'];
+					//slope
+					var m = ((n * sxy) - (sx * sy)) / ((n * sxsquare) - Math.pow(sx,2));
+					//y intercept
+					var b = (sy - (m * sx)) / n;
+					var predictedY = m * this.Stack.cards[0] + b;
+					var r = (n * sxy - sx * sy) / Math.sqrt((n * sxsquare - Math.pow(sx, 2)) * (n * sysquare - Math.pow(sy, 2)));
+					this.Stack.pushX();
+					this.Stack.pushX();
+					this.Stack.cards[0] = predictedY;
+					this.Stack.cards[1] = r;
+					this.displayBuffer = predictedY;
+					this.resetModes();
+					this.operationDone = 1;
+					return this.getDisplayBuffer();
+				}
+				if(this.displayBuffer.toString().length === 1) {
+					this.displayBuffer = '';
+					return this.displayBuffer;
+				}
 				if(this.enterPressed === 1) {
 					this.displayBuffer = '';
-					this.Stack.cards[0] = 0;
+					this.Stack.dropOne(0);
 					this.enterPressed = 0;
 					return this.displayBuffer;
 				}
 				if(this.operationDone === 1) {
 					this.displayBuffer = '';
-					this.Stack.cards[0] = 0;
+					this.Stack.dropOne(0);
 					this.operationDone = 0;
 					return this.displayBuffer;
 				}
-				if(this.displayBuffer.length > 0 && this.displayBuffer !== 0) {
+				if(this.displayBuffer.toString().length > 0 && this.displayBuffer.toString() !== 0) {
 					this.displayBuffer = this.displayBuffer.substring(0,this.displayBuffer.length - 1);
 					this.Stack.cards[0] = this.displayBuffer;
 					return this.displayBuffer;
