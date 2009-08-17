@@ -5,6 +5,9 @@ var PreferencesAssistant = Class.create({
 	},
 
 	setup: function() {
+		
+		console.log(this.calculator.hapticFeedback + '   ' + this.calculator.displayStack);
+		
 		var val = 0;
 		if(this.calculator.hapticFeedback) {
 			val = 1;
@@ -25,37 +28,43 @@ var PreferencesAssistant = Class.create({
 			disabled: false
 		});
 
-		this.controller.setupWidget("haptictoggle",		
-		this.attributes = {
-			choices: [
-			{label: "Enabled", value: 1},
-			{label: "Disabled", value: 2},
-			]
-		},	
-		this.model = {
+		this.hapticModel = {
 			value: val,
 			disabled: false
-		});		
-		this.controller.setupWidget("stacktoggle",		
-		this.attributes = {
+		};
+		this.hapticAttributes = {
 			choices: [
 			{label: "Enabled", value: 1},
 			{label: "Disabled", value: 2},
 			]
-		},	
-		this.model = {
+		};
+		this.stackDisplayModel = {
 			value: display,
 			disabled: false
-		});
+		};
+
+		this.stackDisplayAttributes = {
+			choices: [
+			{label: "Enabled", value: 1},
+			{label: "Disabled", value: 2},
+			]
+		};
+
+		this.controller.setupWidget("haptictoggle",	this.hapticAttributes, this.hapticModel);		
+		this.controller.setupWidget("stacktoggle",	this.stackDisplayAttributes, this.stackDisplayModel);		
+		
 		this.controller.listen('haptictoggle', Mojo.Event.propertyChange, this.onHapticChange.bindAsEventListener(this));
 		this.controller.listen('stacktoggle', Mojo.Event.propertyChange, this.onStackDisplayChange.bindAsEventListener(this));
 		this.controller.listen('clearprefs', Mojo.Event.tap, this.onBackClick.bindAsEventListener(this));
 	},
 	onHapticChange: function() {		
-		this.calculator.setHapticPrefs(this.model.value);
+		this.calculator.setHapticPrefs(this.hapticModel.value);
+		console.log(this.calculator.hapticFeedback + '   ' + this.calculator.displayStack);
+		
 	},
 	onStackDisplayChange: function() {		
-		this.calculator.setStackDisplayPrefs(this.model.value);
+		this.calculator.setStackDisplayPrefs(this.stackDisplayModel.value);
+		console.log(this.calculator.hapticFeedback + '   ' + this.calculator.displayStack);
 	},
 	onBackClick: function(event) {
 		this.controller.stageController.popScene();
