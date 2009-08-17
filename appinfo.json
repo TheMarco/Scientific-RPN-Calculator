@@ -1,6 +1,6 @@
 {
     "title": "Scientific Calculator",
-    "version": "1.0.20",
+    "version": "1.0.21",
     "type": "web",
     "main": "index.html",
     "id": "com.palm.app.scientificcalculator",

@@ -494,6 +494,18 @@ var Calculator = Class.create({
 
 
 				case 'sto':
+				if(this.mode_g == true) {
+					var meanx = this.memoryregisters['r3'] / this.memoryregisters['r2'];
+					var meany = this.memoryregisters['r5'] / this.memoryregisters['r2'];
+					this.Stack.pushX();
+					this.Stack.pushX();
+					this.Stack.cards[0] = meanx;
+					this.Stack.cards[1] = meany;
+					this.operationDone = 1;
+					this.resetModes();
+					this.displayBuffer = this.Stack.cards[0];
+					return this.getDisplayBuffer();
+				}
 				this.stopressed = true;
 				$('mode_sto').addClassName('on');
 				return this.getDisplayBuffer();
