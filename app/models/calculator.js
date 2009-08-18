@@ -107,9 +107,11 @@ var Calculator = Class.create({
 	setStackDisplayPrefs: function(value) {
 		if(value) {
 			this.displayStack = true;
+			$('infoline').innerHTML = Utils.renderStackInfo(this.Stack.cards);
 		}
 		else {
 			this.displayStack = false;
+			$('infoline').innerHTML = '';			
 		}
 		this.db.simpleAdd('displaystack', this.displayStack, function(){}, function(){});
 	},
@@ -205,14 +207,13 @@ var Calculator = Class.create({
 		// remove possible trailing dot
 
 		// deal with rounding better (attempt anyway)
-		data = Math.round(data * 1000000000);
-		data = data / 1000000000;
+
 		if(this.operationDone) {	
 			if(data === '') {return data;};
 			if(this.displayPrecision < 10) {
 				data = parseFloat(data).toFixed(this.displayPrecision);
 			}
-			data = data.toString();
+			//data = data.toString();
 		}
 		return data;
 
