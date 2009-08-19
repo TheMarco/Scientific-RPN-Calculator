@@ -64,7 +64,29 @@ var Calculator = Class.create({
 				this.cards[1] = this.cards[2];
 				this.cards[2] = this.cards[3];
 				this.cards[3] = this.cards[4];
-				this.cards[4] = 0;
+				this.cards[4] = this.cards[3];
+			},
+			rollUp: function() {
+				console.log('rollup');
+				this.fillundostack();
+				var newStack = [];
+				newStack[0] = this.cards[4];
+				newStack[1] = this.cards[0];
+				newStack[2] = this.cards[1];
+				newStack[3] = this.cards[2];
+				newStack[4] = this.cards[3];	
+				this.cards = newStack;			
+			},
+			rollDown: function() {		
+				console.log('rolldown');		
+				this.fillundostack();
+				var newStack = [];
+				newStack[0] = this.cards[1];
+				newStack[1] = this.cards[2];
+				newStack[2] = this.cards[3];
+				newStack[3] = this.cards[4];
+				newStack[4] = this.cards[0];	
+				this.cards = newStack;			
 			},
 			clst: function() {
 				this.fillundostack();
@@ -221,7 +243,7 @@ var Calculator = Class.create({
 
 	round: function(number) {
 		// try to deal with stupid rounding errors
-		return (Math.round(parseFloat(number) * Math.pow(10, 12)) / Math.pow(10, 12));
+		return Math.round(parseFloat(number) * Math.pow(10, 10)) / Math.pow(10, 10);
 	},
 
 
@@ -345,7 +367,6 @@ var Calculator = Class.create({
 			this.operationDone = 1;
 			this.resetModes();
 			return this.displayBuffer;
-			
 		}
 
 		if(type === 'four' && this.mode_g == true) {
@@ -355,6 +376,24 @@ var Calculator = Class.create({
 			//this.displayBuffer = '';
 			this.fixpressed = true;
 			return this.displayBuffer;
+		}		
+		if(type === 'one' && this.mode_g == true) {
+			var retval = this.Stack.cards[0].toString(16);
+			this.operationDone = 1;
+			this.resetModes();
+			return retval;
+		}
+		if(type === 'two' && this.mode_g == true) {
+			var retval = this.Stack.cards[0].toString(2);
+			this.operationDone = 1;
+			this.resetModes();
+			return retval;
+		}
+		if(type === 'three' && this.mode_g == true) {
+			var retval = this.Stack.cards[0].toString(8);
+			this.operationDone = 1;
+			this.resetModes();
+			return retval;
 		}
 		return 'NOOP';
 	},
@@ -513,11 +552,10 @@ var Calculator = Class.create({
 				break;
 				case 'rcl':
 				if(this.mode_g) {
-					temp = this.Stack.cards[0];
-					this.Stack.cards[0] = this.Stack.cards[1];
-					this.Stack.cards[1] = temp;
-					this.displayBuffer = this.Stack.cards[0];
 					this.resetModes();
+					this.Stack.clst();
+					this.displayBuffer = '';
+					this.operationDone = 1;
 				}
 				else {
 					this.rclpressed = true;
@@ -573,14 +611,14 @@ var Calculator = Class.create({
 				break;
 				case 'plus':
 				this.lastx = this.Stack.cards[0];
-				this.Stack.dropOne(this.round(this.Stack.cards[0] + this.Stack.cards[1]));
+				this.Stack.dropOne(this.Stack.cards[0] + this.Stack.cards[1]);
 				this.Stack.stackDump();
 				this.displayBuffer = this.Stack.cards[0].toString();
 				this.operationDone = 1;
 				break;
 				case 'minus':
 				this.lastx = this.Stack.cards[0];
-				this.Stack.dropOne(this.round(this.Stack.cards[1] - this.Stack.cards[0]));
+				this.Stack.dropOne(this.Stack.cards[1] - this.Stack.cards[0]);
 				this.Stack.stackDump();
 				this.displayBuffer = this.Stack.cards[0].toString();
 				this.operationDone = 1;
@@ -594,7 +632,7 @@ var Calculator = Class.create({
 				break;
 				case 'divide':			
 				this.lastx = this.Stack.cards[0];
-				this.Stack.dropOne(this.round(this.Stack.cards[1] / this.Stack.cards[0]));
+				this.Stack.dropOne(this.Stack.cards[1] / this.Stack.cards[0]);
 				this.Stack.stackDump();
 				this.displayBuffer = this.Stack.cards[0].toString();
 				this.operationDone = 1;
@@ -603,12 +641,6 @@ var Calculator = Class.create({
 				if(this.mode_g) {
 					this.resetModes();
 					return 'COMMAND-STACKINSPECTOR';
-				}
-				if(this.mode_f) {
-					this.resetModes();
-					this.Stack.clst();
-					this.displayBuffer = '';
-					this.operationDone = 1;
 				}
 				else {
 					this.Stack.undo();
@@ -647,129 +679,90 @@ var Calculator = Class.create({
 				break;
 				case 'conv':
 				if(this.mode_g) {
-					this.lastx = this.Stack.cards[0];
-					this.Stack.dropOne(Math.pow(this.Stack.cards[1], this.Stack.cards[0]));
-					this.displayBuffer = this.Stack.cards[0].toString();
-					this.operationDone = 1;
 					this.resetModes();
+					return 'COMMAND-CONVERSION';
 				}
 				else {
-					if(this.mode_f) {
-						this.resetModes();
+					if(this.conversionConfig['tofactor'] === 1 && this.conversionConfig['fromfactor'] === 1) {
 						return 'COMMAND-CONVERSION';
 					}
 					else {
-						if(this.conversionConfig['tofactor'] === 1 && this.conversionConfig['fromfactor'] === 1) {
-							return 'COMMAND-CONVERSION';
+						// short circuit the temperatures. easiest for now
+						if(this.conversionConfig['property'] === 'Temperature') {
+							if(this.conversionConfig['fromvalue'] === "Degrees Celsius ('C)") {
+								if (this.conversionConfig['tovalue'] === "Degrees Celsius ('C)") {
+									//nothing
+								}
+								if (this.conversionConfig['tovalue'] === "Degrees Fahrenheit ('F)") {
+									this.Stack.cards[0] = (9/5) * this.Stack.cards[0] + 32;
+								}
+								if (this.conversionConfig['tovalue'] === "Degrees Kelvin ('K)") {
+									this.Stack.cards[0] = this.Stack.cards[0] + 273.15;
+								}
+								if (this.conversionConfig['tovalue'] === "Degrees Rankine ('R)") {
+									this.Stack.cards[0] = (9/5) * this.Stack.cards[0] + 491.69;
+								}	
+							}
+
+							if(this.conversionConfig['fromvalue'] === "Degrees Fahrenheit ('F)") {
+								if (this.conversionConfig['tovalue'] === "Degrees Celsius ('C)") {
+									this.Stack.cards[0] = (this.Stack.cards[0] - 32) / 1.8;
+								}
+								if (this.conversionConfig['tovalue'] === "Degrees Fahrenheit ('F)") {
+									//nothing
+								}
+								if (this.conversionConfig['tovalue'] === "Degrees Kelvin ('K)") {
+									this.Stack.cards[0] = ((5/9) * (this.Stack.cards[0] - 32)) - 273.15;
+								}
+								if (this.conversionConfig['tovalue'] === "Degrees Rankine ('R)") {
+									this.Stack.cards[0] = this.Stack.cards[0] + 459.69;
+								}	
+							}
+
+							if(this.conversionConfig['fromvalue'] === "Degrees Kelvin ('K)") {
+								if (this.conversionConfig['tovalue'] === "Degrees Celsius ('C)") {
+									this.Stack.cards[0] = this.Stack.cards[0] - 273.15;
+								}
+								if (this.conversionConfig['tovalue'] === "Degrees Fahrenheit ('F)") {
+									this.Stack.cards[0] = (9/5) * (this.Stack.cards[0] - 273.15) + 32;
+								}
+								if (this.conversionConfig['tovalue'] === "Degrees Kelvin ('K)") {
+									//nothing
+								}
+								if (this.conversionConfig['tovalue'] === "Degrees Rankine ('R)") {
+									this.Stack.cards[0] = (9/5) * this.Stack.cards[0] + 764.84;
+								}	
+							}
+
+							if(this.conversionConfig['fromvalue'] === "Degrees Rankine ('R)") {
+								if (this.conversionConfig['tovalue'] === "Degrees Celsius ('C)") {
+									this.Stack.cards[0] = (5/9) * (this.Stack.cards[0] - 491.69);
+								}
+								if (this.conversionConfig['tovalue'] === "Degrees Fahrenheit ('F)") {
+									this.Stack.cards[0] = this.Stack.cards[0] - 459.69;
+								}
+								if (this.conversionConfig['tovalue'] === "Degrees Kelvin ('K)") {
+									this.Stack.cards[0] = (5/9) * (this.Stack.cards[0] - 764.84);
+								}
+								if (this.conversionConfig['tovalue'] === "Degrees Rankine ('R)") {
+									this.Stack.cards[0] = (9/5) * this.Stack.cards[0] + 764.84;
+								}	
+							}
+							if(this.conversionConfig['tovalue'] === "Degrees Kelvin ('K)" || this.conversionConfig['tovalue'] === "Degrees Rankine ('R)") {
+								if(this.Stack.cards[0] < 0) {
+									this.Stack.cards[0] = NaN;
+								}
+							}								
 						}
 						else {
-
-
-							// short circuit the temperatures. easiest for now
-							if(this.conversionConfig['property'] === 'Temperature') {
-								if(this.conversionConfig['fromvalue'] === "Degrees Celsius ('C)") {
-									if (this.conversionConfig['tovalue'] === "Degrees Celsius ('C)") {
-										//nothing
-									}
-									if (this.conversionConfig['tovalue'] === "Degrees Fahrenheit ('F)") {
-										this.Stack.cards[0] = (9/5) * this.Stack.cards[0] + 32;
-									}
-									if (this.conversionConfig['tovalue'] === "Degrees Kelvin ('K)") {
-										this.Stack.cards[0] = this.Stack.cards[0] + 273.15;
-									}
-									if (this.conversionConfig['tovalue'] === "Degrees Rankine ('R)") {
-										this.Stack.cards[0] = (9/5) * this.Stack.cards[0] + 491.69;
-									}	
-								}
-
-								if(this.conversionConfig['fromvalue'] === "Degrees Fahrenheit ('F)") {
-									if (this.conversionConfig['tovalue'] === "Degrees Celsius ('C)") {
-										this.Stack.cards[0] = (this.Stack.cards[0] - 32) / 1.8;
-									}
-									if (this.conversionConfig['tovalue'] === "Degrees Fahrenheit ('F)") {
-										//nothing
-									}
-									if (this.conversionConfig['tovalue'] === "Degrees Kelvin ('K)") {
-										this.Stack.cards[0] = ((5/9) * (this.Stack.cards[0] - 32)) - 273.15;
-									}
-									if (this.conversionConfig['tovalue'] === "Degrees Rankine ('R)") {
-										this.Stack.cards[0] = this.Stack.cards[0] + 459.69;
-									}	
-								}
-
-								if(this.conversionConfig['fromvalue'] === "Degrees Kelvin ('K)") {
-									if (this.conversionConfig['tovalue'] === "Degrees Celsius ('C)") {
-										this.Stack.cards[0] = this.Stack.cards[0] - 273.15;
-									}
-									if (this.conversionConfig['tovalue'] === "Degrees Fahrenheit ('F)") {
-										this.Stack.cards[0] = (9/5) * (this.Stack.cards[0] - 273.15) + 32;
-									}
-									if (this.conversionConfig['tovalue'] === "Degrees Kelvin ('K)") {
-										//nothing
-									}
-									if (this.conversionConfig['tovalue'] === "Degrees Rankine ('R)") {
-										this.Stack.cards[0] = (9/5) * this.Stack.cards[0] + 764.84;
-									}	
-								}
-
-								if(this.conversionConfig['fromvalue'] === "Degrees Rankine ('R)") {
-									if (this.conversionConfig['tovalue'] === "Degrees Celsius ('C)") {
-										this.Stack.cards[0] = (5/9) * (this.Stack.cards[0] - 491.69);
-									}
-									if (this.conversionConfig['tovalue'] === "Degrees Fahrenheit ('F)") {
-										this.Stack.cards[0] = this.Stack.cards[0] - 459.69;
-									}
-									if (this.conversionConfig['tovalue'] === "Degrees Kelvin ('K)") {
-										this.Stack.cards[0] = (5/9) * (this.Stack.cards[0] - 764.84);
-									}
-									if (this.conversionConfig['tovalue'] === "Degrees Rankine ('R)") {
-										this.Stack.cards[0] = (9/5) * this.Stack.cards[0] + 764.84;
-									}	
-								}
-								if(this.conversionConfig['tovalue'] === "Degrees Kelvin ('K)" || this.conversionConfig['tovalue'] === "Degrees Rankine ('R)") {
-									if(this.Stack.cards[0] < 0) {
-										this.Stack.cards[0] = NaN;
-									}
-								}								
-							}
-							else {
-								var result = this.Stack.cards[0] * this.conversionConfig['fromfactor'];
-								result = result / this.conversionConfig['tofactor'];
-								this.Stack.cards[0] = result;
-							}
-							this.displayBuffer = this.Stack.cards[0].toString();
-							this.convDone = 1;
-							this.operationDone = 1;
+							var result = this.Stack.cards[0] * this.conversionConfig['fromfactor'];
+							result = result / this.conversionConfig['tofactor'];
+							this.Stack.cards[0] = result;
 						}
+						this.displayBuffer = this.Stack.cards[0].toString();
+						this.convDone = 1;
+						this.operationDone = 1;
 					}
-				}
-				break;
-				case 'tohex':
-				if(this.mode_g == true) {
-					var retval = this.Stack.cards[0].toString(10);
-					this.operationDone = 1;
-					this.resetModes();
-					return retval;
-				}
-				else {
-					var retval = this.Stack.cards[0].toString(16);
-					this.operationDone = 1;
-					this.resetModes();
-					return retval;
-				}
-				break;
-				case 'tobin':
-				if(this.mode_g == true) {
-					var retval = this.Stack.cards[0].toString(8);
-					this.operationDone = 1;
-					this.resetModes();
-					return retval;
-				}
-				else {
-					var retval = this.Stack.cards[0].toString(2);
-					this.operationDone = 1;
-					this.resetModes();
-					return retval;
 				}
 				break;
 				case 'hyp':
@@ -883,29 +876,40 @@ var Calculator = Class.create({
 					this.resetModes();
 				}
 				else {
-					if(this.mode_f == true) {
-						this.Stack.pushX();
-						this.Stack.cards[0] = 42;
-						this.resetModes();
-					}
-					else {
-						this.Stack.cards[0] = Math.pow(this.Stack.cards[0], 2);
-					}
+					this.Stack.cards[0] = Math.pow(this.Stack.cards[0], 2);
 				}
 				this.displayBuffer = this.Stack.cards[0].toString();
 				this.operationDone = 1;
 				break;
 				case 'onedivx':
-				this.lastx = this.Stack.cards[0];
-				this.Stack.cards[0] = 1 / this.Stack.cards[0];
-				this.displayBuffer = this.Stack.cards[0].toString();
-				this.operationDone = 1;
+				if(this.mode_g == true) {
+					this.lastx = this.Stack.cards[0];
+					this.Stack.dropOne(Math.pow(this.Stack.cards[1], this.Stack.cards[0]));
+					this.displayBuffer = this.Stack.cards[0].toString();
+					this.operationDone = 1;
+					this.resetModes();
+				}
+				else {
+					this.lastx = this.Stack.cards[0];
+					this.Stack.cards[0] = 1 / this.Stack.cards[0];
+					this.displayBuffer = this.Stack.cards[0].toString();
+					this.operationDone = 1;
+				}
 				break;
 				case 'xfac':
-				this.lastx = this.Stack.cards[0];
-				this.Stack.cards[0] = this.factorial(this.Stack.cards[0]);
-				this.displayBuffer = this.Stack.cards[0].toString();
-				this.operationDone = 1;
+				if(this.mode_f == true) {
+					this.Stack.pushX();
+					this.Stack.cards[0] = 42;
+					this.resetModes();
+					this.operationDone = 1;
+					this.displayBuffer = this.Stack.cards[0];
+				}
+				else {
+					this.lastx = this.Stack.cards[0];
+					this.Stack.cards[0] = this.factorial(this.Stack.cards[0]);
+					this.displayBuffer = this.Stack.cards[0].toString();
+					this.operationDone = 1;
+				}
 				break;
 
 				case 'sqrt':
@@ -926,15 +930,35 @@ var Calculator = Class.create({
 				var yVal = this.Stack.cards[1];
 				this.lastx = this.Stack.cards[0];
 				if(this.mode_g == true) {
-					this.Stack.cards[0] = ((xVal - yVal) / yVal) * 100;
+					this.Stack.cards[0] = this.round(((xVal - yVal) / yVal) * 100);
 					this.resetModes();
 				}
 				else {
-					this.Stack.cards[0] = (yVal / 100) * xVal;
+					this.Stack.cards[0] = this.round((yVal / 100) * xVal);
 				}
 				this.displayBuffer = this.Stack.cards[0].toString();
 				this.operationDone = 1;
 				break;
+				case 'swapxy':
+				temp = this.Stack.cards[0];
+				this.Stack.cards[0] = this.Stack.cards[1];
+				this.Stack.cards[1] = temp;
+				this.displayBuffer = this.Stack.cards[0];
+				this.resetModes();
+				return this.getDisplayBuffer();
+				break;
+				case 'roll':
+				if(this.mode_g == true) {
+					this.Stack.rollUp();
+					this.resetModes();
+				}
+				else {
+					this.Stack.rollDown();
+				}
+				this.displayBuffer = this.Stack.cards[0];
+				return this.getDisplayBuffer();
+				break;
+				
 				case 'sqrt':
 				this.lastx = this.Stack.cards[0];
 				if(this.mode_g == true) {
@@ -959,9 +983,9 @@ var Calculator = Class.create({
 				}
 				break;	
 				case 'backspace':			
-				
+
 				if(this.mode_g == true) {
-					
+					/*
 					var meanx = this.memoryregisters['r3'] / this.memoryregisters['r2'];
 					var meany = this.memoryregisters['r5'] / this.memoryregisters['r2'];
 					var sumofitemsminusmeanxsquare = 0;
@@ -972,6 +996,12 @@ var Calculator = Class.create({
 					}
 					var sdx = Math.sqrt(sumofitemsminusmeanxsquare / this.memoryregisters['r2']);
 					var sdy = Math.sqrt(sumofitemsminusmeanysquare / this.memoryregisters['r2']);
+					*/
+					var M = (this.memoryregisters['r2'] * this.memoryregisters['r4']) - Math.pow(this.memoryregisters['r3'], 2);
+					var N = (this.memoryregisters['r2'] * this.memoryregisters['r6']) - Math.pow(this.memoryregisters['r5'], 2);
+					var sdx = Math.sqrt(M / (this.memoryregisters['r2'] * (this.memoryregisters['r2'] - 1)));
+					var sdy = Math.sqrt(N / (this.memoryregisters['r2'] * (this.memoryregisters['r2'] - 1)));
+					
 					this.Stack.pushX();
 					this.Stack.pushX();					
 					this.Stack.cards[0] = sdx;
@@ -981,7 +1011,7 @@ var Calculator = Class.create({
 					this.operationDone = 1;
 					return this.getDisplayBuffer();
 				}
-				
+
 				if(this.mode_f == true) {
 					this.calculateStatItems();
 					var n = this.memoryregisters['r2'];

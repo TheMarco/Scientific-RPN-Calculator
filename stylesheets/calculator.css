@@ -70,9 +70,9 @@
 }
 
 #tenx {background-position: -68px -70px;}
-#conv {background-position:-188px -170px;}
-#tohex {background-position: -188px -70px;}
-#tobin {background-position: -248px -70px;}
+#onedivx {background-position: -128px -70px;}
+#xsquare {background-position: -188px -70px;}
+#sqrt {background-position: -248px -70px;}
 
 #hyp{background-position:-8px -120px;}
 #sin{background-position:-68px -120px;}
@@ -80,11 +80,11 @@
 #tan{background-position:-188px -120px;}
 #pi{background-position:-248px -120px;}
 
-#xsquare{background-position:-8px -170px;}
-#xfac{background-position:-68px -170px;}
-#sqrt{background-position:-128px -170px;}
-#onedivx{background-position: -128px -70px;}
-#percent{background-position:-248px -170px;}
+#xfac{background-position:-8px -170px;}
+#conv{background-position:-68px -170px;}
+#percent{background-position:-128px -170px;}
+#swapxy{background-position:-188px -170px;}
+#roll{background-position:-248px -170px;}
 
 #f{background-position:-8px -220px;}
 #g{background-position:-68px -220px;}
@@ -268,4 +268,10 @@
 #stackinspector .info {
 	padding-top: 15px;
 	text-align: left;
+}
+.tophidden {
+	/* this hides the top row when needed */
+	visibility:hidden;
+	height:10px;
+	overflow:hidden;
 }
