@@ -4,16 +4,6 @@ var ConversionAssistant = Class.create({
 		this.calculator = calculator;
 	},
 	setup: function() {		
-		this.controller.setupWidget("clearconversion",		
-		this.attributes = {
-			disabledProperty: 'disabled'
-		},	
-		this.model = {
-			buttonLabel : "Close",
-			buttonClass: 'secondary',
-			disabled: false
-		});
-		this.controller.listen('clearconversion', Mojo.Event.tap, this.onBackClick.bindAsEventListener(this));
 		this.controller.setupWidget("apply",		
 		this.attributes = {
 			disabledProperty: 'disabled'
@@ -157,9 +147,6 @@ var ConversionAssistant = Class.create({
 		this.controller.modelChanged(this.tomodel, this); 
 	},
 
-	onBackClick: function(event) {
-		this.controller.stageController.popScene();
-	},
 	onApplyClick: function(event) {
 
 		// set to value in case nothing has changed for the property
@@ -201,5 +188,16 @@ var ConversionAssistant = Class.create({
 		);
 
 		this.controller.stageController.popScene();
+	},
+	cleanup: function() {
+		this.unit = null;
+		this.property = null;
+		this.factor = null;
+		this.calculator = null;
+		this.frommodel = null;
+		this.propertymodel = null;
+		this.tomodel = null;
+		this.controller.stopListening('property', Mojo.Event.propertyChange,this.onPropertyChange);
+		this.controller.stopListening('apply', Mojo.Event.tap, this.onApplyClick);
 	}
 });

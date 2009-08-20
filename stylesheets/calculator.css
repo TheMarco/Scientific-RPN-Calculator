@@ -255,23 +255,48 @@
 .pref label {
 	float: left; line-height: 30px;font-size:18px;display:block;padding-top: 10px;padding-left: 10px;
 }
-
-#stack div.n {
-	font-weight: bold;
-	margin-top: 15px;
-	float: left;
+#helpcontents div.title {
+	text-align: left;
+	padding-left: 0;
+	font-size: 16px;
 }
-#stack label {
-	color: #F5B800;
-	margin-top: 15px;
+#helpcontents .title {
+	background: url(../images/icon_help.png) no-repeat 50% right;
 }
 #stackinspector .info {
 	padding-top: 15px;
 	text-align: left;
+}
+#stack .title {
+	text-align: left;
+	font-size: 16px;
+}
+#stack .label {
+	color: #c3af3c;
+	font-weight: bold;
+	font-size: 16px;
 }
 .tophidden {
 	/* this hides the top row when needed */
 	visibility:hidden;
 	height:10px;
 	overflow:hidden;
+}
+.helppage .aboutcontent {
+	text-align: left;
+}
+.helppage h1 {
+	font-size: 22px;
+	padding-bottom: 2px;
+	border-bottom: 1px #666 solid;
+}
+.helppage h2 {
+	font-size: 18px;
+}
+.helppage h3 {
+	font-size: 16px;
+}
+.helppage p {
+	padding: 0;
+	font-size: 15px;
 }

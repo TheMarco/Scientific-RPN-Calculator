@@ -20,5 +20,13 @@
 {
     "source": "app\/controllers\/stackinspector-assistant.js",
     "scenes": "stackinspector"
+  },
+{
+    "source": "app\/controllers\/help-assistant.js",
+    "scenes": "help"
+  },
+{
+    "source": "app\/controllers\/helppage-assistant.js",
+    "scenes": ["help1", "help2", "help3", "help4", "help5"]
   }
 ]

@@ -27,9 +27,6 @@ var StackinspectorAssistant = Class.create({
 			buttonClass: 'primary',
 			disabled: false
 		});
-		
-		this.controller.listen('clearinspector', Mojo.Event.tap, this.onBackClick.bindAsEventListener(this));
-		this.controller.listen('apply', Mojo.Event.tap, this.onApplyClick.bindAsEventListener(this));
 
 		this.listItems = [
 			{id: 's4', label: 'b', value: this.calculator.Stack.cards[4]},
@@ -55,11 +52,11 @@ var StackinspectorAssistant = Class.create({
 			listTitle: 'Stack Inspector',
 			items: this.listItems
 		}
-	);				
-	Mojo.Event.listen($("stack"),Mojo.Event.listReorder,this.onStackChange.bind(this));
-
+	);	
+	this.controller.listen('clearinspector', Mojo.Event.tap, this.onBackClick.bindAsEventListener(this));
+	this.controller.listen('apply', Mojo.Event.tap, this.onApplyClick.bindAsEventListener(this));			
+	this.controller.listen('stack', Mojo.Event.listReorder, this.onStackChange.bind(this));
 },
-
 onStackChange: function(event) {
 	var newstack = [];
 	for(i=0;i<5;i++) {
@@ -80,16 +77,22 @@ onStackChange: function(event) {
 		$('infoline').innerHTML = '';
 	}
 },
-
 onBackClick: function(event) {
 	this.calculator.Stack.cards = this.oldStack;
 	$('firstline').innerHTML = Utils.renderDisplay(this.oldStack[0]);
 	this.calculator.enterPressed = false;
 	this.controller.stageController.popScene();
 },
-
 onApplyClick: function(event) {
 	this.controller.stageController.popScene();
 	this.calculator.enterPressed = true;
-}
+},
+cleanup: function() {
+	this.calculator = null;
+	this.listItems = null;
+	this.oldStack = null;
+	this.controller.stopListening('clearinspector', Mojo.Event.tap, this.onBackClick);
+	this.controller.stopListening('apply', Mojo.Event.tap, this.onApplyClick);
+	this.controller.stopListening('stack', Mojo.Event.listReorder, this.onStackChange);
+	}
 });

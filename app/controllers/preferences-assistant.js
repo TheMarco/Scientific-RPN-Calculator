@@ -53,7 +53,6 @@ var PreferencesAssistant = Class.create({
 
 		this.controller.listen('haptictoggle', Mojo.Event.propertyChange, this.onHapticChange.bindAsEventListener(this));
 		this.controller.listen('stacktoggle', Mojo.Event.propertyChange, this.onStackDisplayChange.bindAsEventListener(this));
-		this.controller.listen('clearprefs', Mojo.Event.tap, this.onBackClick.bindAsEventListener(this));
 	},
 
 	onHapticChange: function() {		
@@ -66,5 +65,14 @@ var PreferencesAssistant = Class.create({
 
 	onBackClick: function(event) {
 		this.controller.stageController.popScene();
+	},
+	cleanup: function() {
+		this.calculator = null;
+		this.hapticModel = null;
+		this.hapticAttributes = null;
+		this.stackDisplayModel = null;
+		this.stackDisplayAttributes = null;
+		this.controller.stopListening('haptictoggle', Mojo.Event.propertyChange, this.onHapticChange);
+		this.controller.stopListening('stacktoggle', Mojo.Event.propertyChange, this.onStackDisplayChange);
 	}
 });
