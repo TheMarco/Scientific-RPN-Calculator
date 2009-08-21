@@ -1,3 +1,10 @@
+/*
+Copyright 2009 by Marco van Hylckama Vlieg
+All Rights Reserved.
+License information: http://creativecommons.org/licenses/by-nc-nd/3.0/us/
+DO NOT DISTRIBUTE Palm .ipk PACKAGES OF THIS SOFTWARE
+*/
+
 function AppAssistant(appController) {
 	this.appController = appController;
 }

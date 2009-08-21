@@ -1,3 +1,10 @@
+/*
+ 	Copyright 2009 by Marco van Hylckama Vlieg
+	All Rights Reserved.
+	License information: http://creativecommons.org/licenses/by-nc-nd/3.0/us/
+	DO NOT DISTRIBUTE Palm .ipk PACKAGES OF THIS SOFTWARE
+*/
+
 var HelpAssistant = Class.create({
 
 	setup: function() {
@@ -28,5 +35,7 @@ onChapterTap: function(event) {
 	this.controller.stageController.pushScene("help" + helpPage);
 },
 
-cleanup: function() {}
+cleanup: function() {
+	this.listItems = null;
+}
 });
