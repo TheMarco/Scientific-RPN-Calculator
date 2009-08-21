@@ -19,6 +19,8 @@ var Calculator = Class.create({
 		this.lastx = null;
 		this.stopressed = false;
 		this.rclpressed = false;
+		this.stoarithmetic = 'none';
+		this.rclarithmetic = 'none';
 		this.fixpressed = false;
 		this.memoryregisters = {};
 		this.statisticsregisters = [];
@@ -292,12 +294,49 @@ var Calculator = Class.create({
 
 	handleStorage: function(type) {
 		if(this.stopressed) {
-			if(type !== 'dot') {
+			if(this.stoarithmetic !== 'none') {
+				var newVal;
+				switch(this.stoarithmetic) {
+					case 'plus':
+					newVal = this.memoryregisters['r' + Calculator.keyStrokes[type]] + this.Stack.cards[0];
+					 break;
+					case 'minus':
+					newVal = this.memoryregisters['r' + Calculator.keyStrokes[type]] - this.Stack.cards[0];
+					break;
+					case 'divide':
+					newVal = this.round(this.memoryregisters['r' + Calculator.keyStrokes[type]] / this.Stack.cards[0]);
+					break;
+					case 'multiply':
+					newVal = this.round(this.memoryregisters['r' + Calculator.keyStrokes[type]] * this.Stack.cards[0]);
+					break;
+				}
+				this.stopressed = false;
+				this.stoarithmetic = 'none';
+				if(newVal === NaN) {
+					return NaN;
+				}
+				else {
+					this.memoryregisters['r' + Calculator.keyStrokes[type]] = newVal;
+					this.db.simpleAdd('memoryregisters', this.memToJSON());
+					return this.getDisplayBuffer();
+				}
+			}
+			if(type !== 'dot' && Calculator.keyStrokes[type] !== undefined) {
 				this.memoryregisters['r' + Calculator.keyStrokes[type]] = this.Stack.cards[0];
 				this.db.simpleAdd('memoryregisters', this.memToJSON());
 				this.stopressed = false;
 				$('mode_sto').removeClassName('on');
+				this.operationDone = 1;
 			}
+			if(type == 'minus' || type == 'plus' || type == 'divide' || type== 'multiply') {
+				this.stoarithmetic = type;
+				console.log('set stoarithmetic');
+				return this.getDisplayBuffer();
+			}
+			else {
+				this.stoarithmetic = 'none';
+			}
+			this.stopressed = false;
 			return this.getDisplayBuffer();
 		}
 		if(this.rclpressed) {
@@ -306,6 +345,7 @@ var Calculator = Class.create({
 					this.Stack.pushX();
 					this.Stack.cards[0] = this.memoryregisters['r' + Calculator.keyStrokes[type]];
 					this.displayBuffer = this.Stack.cards[0];
+					this.operationDone = 1;
 					//this.enterPressed = 1;
 				}					
 			}
@@ -732,8 +772,10 @@ var Calculator = Class.create({
 					
 					if(this.mode_f == true) {
 						//BLERK
-					var newX = this.Stack.cards[0] * Math.cos(this.Stack.cards[1]) * this.conversion;
-					var newY = this.Stack.cards[0] * Math.sin(this.Stack.cards[1]) * this.conversion;
+						
+					//console.log(this.conversion + '  ' + Math.cos(this.Stack.cards[1]));
+					var newX = this.round(this.Stack.cards[0] * Math.cos(this.Stack.cards[1] * this.conversion));
+					var newY = this.round(this.Stack.cards[0] * Math.sin(this.Stack.cards[1] * this.conversion));
 					console.log(newX + ' and ' + newY);
 					this.Stack.cards[0] = newX;
 					this.Stack.cards[1] = newY;
@@ -766,7 +808,7 @@ var Calculator = Class.create({
 					if(this.mode_f == true) {
 						//BLORK
 						var r = Math.sqrt(Math.pow(this.Stack.cards[0], 2) + Math.pow(this.Stack.cards[1], 2));
-						var t = Math.atan(this.Stack.cards[1] / this.Stack.cards[0]) * this.conversion;
+						var t = Math.atan(this.Stack.cards[1] / this.Stack.cards[0]) / this.conversion;
 						this.Stack.cards[0] = r;
 						this.Stack.cards[1] = t;
 						this.displayBuffer = this.Stack.cards[0];
