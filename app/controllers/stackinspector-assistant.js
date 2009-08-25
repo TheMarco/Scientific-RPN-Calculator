@@ -52,7 +52,7 @@ var StackinspectorAssistant = Class.create({
 		this.controller.setupWidget("stack",
 		this.attributes = {
 			itemTemplate: "stackinspector/listitem",
-			swipeToDelete: true,
+			swipeToDelete: false,
 			reorderable: true
 		},
 		this.model = {
@@ -60,9 +60,14 @@ var StackinspectorAssistant = Class.create({
 			items: this.listItems
 		}
 	);	
-	this.controller.listen('clearinspector', Mojo.Event.tap, this.onBackClick.bindAsEventListener(this));
-	this.controller.listen('apply', Mojo.Event.tap, this.onApplyClick.bindAsEventListener(this));			
-	this.controller.listen('stack', Mojo.Event.listReorder, this.onStackChange.bind(this));
+	
+	var backClickBind = this.onBackClick.bindAsEventListener(this);
+	var applyClickBind = this.onApplyClick.bindAsEventListener(this);
+	var stackChangeBind = this.onStackChange.bind(this);
+	
+	this.controller.listen('clearinspector', Mojo.Event.tap, backClickBind);
+	this.controller.listen('apply', Mojo.Event.tap, applyClickBind);			
+	this.controller.listen('stack', Mojo.Event.listReorder, stackChangeBind);
 	},
 	onStackChange: function(event) {
 		var newstack = [];
@@ -86,7 +91,7 @@ var StackinspectorAssistant = Class.create({
 	},
 	onBackClick: function(event) {
 		this.calculator.Stack.cards = this.oldStack;
-		$('firstline').innerHTML = Utils.renderDisplay(this.oldStack[0]);
+		$('firstline').innerHTML = Utils.renderDisplay(this.calculator.getDisplayBuffer(true));
 		this.calculator.enterPressed = false;
 		this.controller.stageController.popScene();
 	},
@@ -95,11 +100,14 @@ var StackinspectorAssistant = Class.create({
 		this.calculator.enterPressed = true;
 	},
 	cleanup: function() {
+		var backClickBind = this.onBackClick.bindAsEventListener(this);
+		var applyClickBind = this.onApplyClick.bindAsEventListener(this);
+		var stackChangeBind = this.onStackChange.bind(this);
 		this.calculator = null;
 		this.listItems = null;
 		this.oldStack = null;
-		this.controller.stopListening('clearinspector', Mojo.Event.tap, this.onBackClick);
-		this.controller.stopListening('apply', Mojo.Event.tap, this.onApplyClick);
-		this.controller.stopListening('stack', Mojo.Event.listReorder, this.onStackChange);
+		this.controller.stopListening('clearinspector', Mojo.Event.tap, backClickBind);
+		this.controller.stopListening('apply', Mojo.Event.tap, applyClickBind);
+		this.controller.stopListening('stack', Mojo.Event.listReorder, stackChangeBind);
 	}
 });

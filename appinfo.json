@@ -1,9 +1,9 @@
 {
     "title": "Scientific Calculator",
-    "version": "1.0.28",
+    "version": "1.0.36",
     "type": "web",
     "main": "index.html",
-    "id": "com.palm.app.scientificcalculator",
+    "id": "nl.i-marco.app.scientificcalculator",
     "icon": "icon.png",
     "vendor": "Marco van Hylckama Vlieg",
     "vendorurl": "http://www.i-marco.nl/",

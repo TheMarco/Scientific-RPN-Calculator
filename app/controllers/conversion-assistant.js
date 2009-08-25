@@ -49,7 +49,7 @@ var ConversionAssistant = Class.create({
 
 		this.property[5] = "Force";
 		this.unit[5] = new Array("Newton (N)", "Dyne (dy)", "Kilogram force (kgf)", "Kilopond force (kpf)", "Kip (k)", "Ounce force (ozf)", "Pound force (lbf)", "Poundal");
-		this.factor[5] = new Array(1, .00001, 9.806650, 9.806650, 4448.222, .2780139, .4535924, .138255);
+		this.factor[5] = new Array(1, .00001, 9.806650, 9.806650, 4448.222, .2780139, 4.4482216153, .138255);
 
 		this.property[6] = "Force / Length";
 		this.unit[6] = new Array("Newton/meter (N/m)", "Pound force/inch (lbf/in)", "Pound force/foot (lbf/ft)");
@@ -204,7 +204,9 @@ var ConversionAssistant = Class.create({
 		this.frommodel = null;
 		this.propertymodel = null;
 		this.tomodel = null;
-		this.controller.stopListening('property', Mojo.Event.propertyChange,this.onPropertyChange);
-		this.controller.stopListening('apply', Mojo.Event.tap, this.onApplyClick);
+		var applyClickBind = this.onApplyClick.bindAsEventListener(this);
+		var propertyChangeBind = this.onPropertyChange.bind(this);
+		this.controller.stopListening('property', Mojo.Event.propertyChange, propertyChangeBind);
+		this.controller.stopListening('apply', Mojo.Event.tap, applyClickBind);
 	}
 });

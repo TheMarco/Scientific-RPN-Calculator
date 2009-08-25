@@ -17,9 +17,8 @@
 	z-index: 10;
 }
 #scientificcalculator-main, #about {
-	max-height: 456px;
-	min-height: 424px;
-	position: fixed;
+	height: 452px;
+	position: absolute;
 	top: 0;
 	left: 0;
 	bottom: 0;
@@ -40,11 +39,11 @@
 
 .aboutcontent {
 	font-size: 14px;
-	padding: 45px 10px 10px 10px;
+	padding: 60px 10px 0 10px;
 	text-align: center;
 }
 .aboutcontent p {
-	margin-bottom: 0;
+	margin:0;
 }
 #copyright {
 	font-size: 11px;
@@ -64,6 +63,16 @@
 	background-position: -8px -70px;
 	float: left;
 }
+
+.resized .button {
+	position: relative;
+	top: -4px;
+	margin-bottom: -2px;
+}
+.resized #keys {
+	padding-top: 1px;
+}
+
 
 .button:active {
 	background-image: url(../images/buttons_sunken.png) ;	

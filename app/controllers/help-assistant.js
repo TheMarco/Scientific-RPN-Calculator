@@ -37,5 +37,7 @@ onChapterTap: function(event) {
 
 cleanup: function() {
 	this.listItems = null;
+	chapterTapBind = this.onChapterTap.bindAsEventListener(this);
+	this.controller.stopListening('helpcontents', Mojo.Event.tap, chapterTapBind);
 }
 });

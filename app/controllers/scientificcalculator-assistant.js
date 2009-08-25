@@ -25,11 +25,43 @@ var ScientificcalculatorAssistant = Class.create({
 	setup: function() {
 		this.setupTapHandlers();
 		this.setupKeyHandlers();
+		this.setupResizeHandler();
 		this.controller.setupWidget(Mojo.Menu.appMenu, {omitDefaultItems:true}, this.appMenuModel);
+		this.onWindowResize();
+	},
+	cleanup: function() {
+		this.calculator = null;
+		var tapBind = this.onTap.bindAsEventListener(this);
+		var mouseDownBind = this.onMouseDown.bindAsEventListener(this);
+		var keyDownBind = this.onKeyDown.bindAsEventListener(this);
+		Mojo.Event.stopListening(this.controller.window, 'resize', this.onWindowResize);
+		Mojo.Event.stopListening($('scientificcalculator-main'), Mojo.Event.tap, tapBind);
+		Mojo.Event.stopListening($('scientificcalculator-main'), 'mousedown', mouseDownBind);
+		Mojo.Event.stopListening($('scientificcalculator-main'), 'mousedown', mouseDownBind);
+		Mojo.Event.stopListening(this.controller.document, "keydown", keyDownBind);
+	},
+	setupResizeHandler: function() {
+		Mojo.Event.listen(this.controller.window, 'resize', this.onWindowResize);
+	},
+	onWindowResize: function() {
+		if(window.innerHeight === 452) {
+			$('scientificcalculator-main').removeClassName('resized');
+			$('toprow').removeClassName('tophidden');
+		}
+		else {
+			if(window.innerHeight === 390) {
+				$('scientificcalculator-main').addClassName('resized');
+				$('toprow').addClassName('tophidden');
+			}
+			else {
+				$('scientificcalculator-main').addClassName('resized');
+				$('toprow').removeClassName('tophidden');
+			}
+		}
 	},
 	setupTapHandlers: function() {		
 		// event handling FTW!		
-		$('scientificcalculator-main').observe(Mojo.Event.tap, this.onTap.bindAsEventListener(this));
+		Mojo.Event.listen($('scientificcalculator-main'), Mojo.Event.tap, this.onTap.bindAsEventListener(this));		
 		Mojo.Event.listen($('scientificcalculator-main'), 'mousedown', this.onMouseDown.bindAsEventListener(this));
 	},
 
@@ -55,9 +87,22 @@ var ScientificcalculatorAssistant = Class.create({
 		}
 		else {
 			if(this.calculator.hapticFeedback !== false) {
-				this.controller.serviceRequest("palm://com.palm.vibrate", {
-					method: 'vibrate', parameters: { 'period': 0,'duration': 50 }
-				});
+				
+				// Dear Palm, I'd love to be able to use the method below
+				// However it only works when the app ID is in com.palm.app.* format
+				// which is not allowed for developers to use.
+				// please enable this for regular use!
+				
+				//this.controller.serviceRequest("palm://com.palm.vibrate", {
+				//	method: 'vibrate', parameters: { 'period': 0,'duration': 50 }
+				//});
+				
+				this.controller.serviceRequest('palm://com.palm.audio/systemsounds', {
+				 method:"playFeedback",
+				 parameters:{'name': 'down2'},
+				 onSuccess:{},
+				 onFailure:{}
+				 });
 			}
 		}		
 	},

@@ -1,0 +1,76 @@
+<script type="text/javascript" src="utils.js"></script>
+<input type="text" id="number" name="number" />
+<input type="text" id="precision" name="number" />
+<input type="text" id="result" name="result" />
+<input type="button" value="do it" onClick="render()"/>
+<script type="text/javascript">
+
+function render() {
+	var number = document.getElementById('number').value;
+	var precision = document.getElementById('precision').value;
+	document.getElementById('result').value = do_sci(number, precision);
+}
+
+function do_sci(number, fix) {
+	sciResult = Utils.toScientific(number, false);
+	var splitResult = sciResult.split('e');
+	var beforeE = splitResult[0];
+	var beforeEFixed = parseFloat(beforeE).toFixed(fix);
+	var endResult;
+	if(splitResult[1] === undefined) {
+		endResult = beforeEFixed.toString() + 'e0';
+	}
+	else {
+		var endResult = beforeEFixed.toString() + 'e' + splitResult[1];
+	}
+	return endResult;
+}
+
+function do_eng(number, fix) {
+	sciResult = Utils.toScientific(number, true);
+	console.log('starting with ' + sciResult);
+	if(sciResult.indexOf('e') < 0) {
+		sciResult = sciResult + 'e0';
+	}
+	var splitResult = sciResult.split('e');
+	var beforeE = splitResult[0];
+	// check if there's a dot in the bit before the e
+	if(beforeE.indexOf('.') > -1) {
+		var splitBeforeE = beforeE.split('.');
+		fix = fix - splitBeforeE[0].length;
+		var beforeEFixed = beforeE;
+		if(fix >= 0) {
+			beforeEFixed = parseFloat(beforeE).toFixed(fix);
+			console.log('s1');
+		}
+		else {
+			beforeEFixed = parseFloat(beforeE).toFixed(0);
+			console.log('s2 ' + beforeEFixed);
+		}
+		if(splitResult[1] === undefined) {
+			return beforeEFixed.toString() + 'e0';
+		}
+		else {
+			return beforeEFixed.toString() + 'e' + splitResult[1];
+		}
+	}
+	else {
+		// no dot, nothing to do
+		
+		// fix value smaller than the amount of digits
+		if(fix <= beforeE.length) {
+			return sciResult;
+		}
+		
+		var numZeros = fix - beforeE.length;
+		var zeros = '';
+		for(i=0;i<numZeros;i++) {
+			zeros = zeros + '0';
+		}
+		console.log(beforeE.toString());
+		beforeE = beforeE.toString() + '.' + zeros;
+		return beforeE + 'e' + splitResult[1];
+	}
+}
+
+</script>

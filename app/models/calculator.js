@@ -22,9 +22,11 @@ var Calculator = Class.create({
 		this.stoarithmetic = 'none';
 		this.rclarithmetic = 'none';
 		this.fixpressed = false;
+		this.engpressed = false;
+		this.scipressed = false;
 		this.memoryregisters = {};
 		this.statisticsregisters = [];
-		this.displayPrecision = 10;
+		this.displayprecision = 10;
 		this.conversionfactor = 1;
 		this.convDone = 0;
 		this.hapticFeedback = true;
@@ -232,45 +234,27 @@ var Calculator = Class.create({
 		data = data.replace(new RegExp(/^\./),"");
 		data = data.replace(new RegExp(/\.$/),"");	
 
-		if(data.indexOf('e') > -1) {
-			return data;
-		}
-
 		// remove possible trailing dot
 
 		// deal with rounding better (attempt anyway)
 
-		if(this.operationDone || done) {	
+		if(this.operationDone == 1 || done) {	
 			if(data === '') {return data;};
-			if(this.displayPrecision < 10 && this.displaymode !== 'sci' && this.displaymode !== 'eng') {
-				data = parseFloat(data).toFixed(this.displayPrecision);
-			}
-			//data = data.toString();
-		}
 
-		if(this.displaymode == 'sci' && (this.operationDone || done)) {
-			data = Utils.toScientific(data, false);
-			if(this.displayPrecision < 10) {
-				var beforeE = data.split('e');
-				if(beforeE.length > 1) {
-					beforeEFixed = parseFloat(beforeE[0]).toFixed(this.displayPrecision);
-					data = beforeEFixed.toString() + 'e' + beforeE[1];
-				}
+			if(this.displaymode === 'fix') {
+				data = parseFloat(data).toFixed(this.displayprecision);
 			}
-		}
-		if(this.displaymode == 'eng' && (this.operationDone || done)) {
-			data = Utils.toScientific(data, true);
-			if(this.displayPrecision < 10) {
-				var beforeE = data.split('e');
-				if(beforeE.length > 1) {
-					beforeEFixed = parseFloat(beforeE[0]).toFixed(this.displayPrecision);
-					data = beforeEFixed.toString() + 'e' + beforeE[1];
-				}
+			if(this.displaymode === 'sci') {
+				data = Utils.SCI(data, this.displayprecision);
+			}
+			if(this.displaymode === 'eng') {
+				data = Utils.ENG(data, this.displayprecision);
 			}
 		}
 
-
-
+		if(data.length > 21) {
+			data = parseFloat(data.toString()).toExponential(this.displayprecision);
+		}
 		return data;
 
 	},
@@ -312,6 +296,7 @@ var Calculator = Class.create({
 				}
 				this.stopressed = false;
 				this.stoarithmetic = 'none';
+				$('mode_sto').removeClassName('on');
 				if(newVal === NaN) {
 					return NaN;
 				}
@@ -330,7 +315,6 @@ var Calculator = Class.create({
 			}
 			if(type == 'minus' || type == 'plus' || type == 'divide' || type== 'multiply') {
 				this.stoarithmetic = type;
-				console.log('set stoarithmetic');
 				return this.getDisplayBuffer();
 			}
 			else {
@@ -339,7 +323,46 @@ var Calculator = Class.create({
 			this.stopressed = false;
 			return this.getDisplayBuffer();
 		}
-		if(this.rclpressed) {
+		if(this.rclpressed) {			
+			if(this.rclarithmetic !== 'none') {
+				var result;
+				switch(this.rclarithmetic) {
+					case 'plus':
+					result = this.Stack.cards[0] + this.memoryregisters['r' + Calculator.keyStrokes[type]];
+					 break;
+					case 'minus':
+					result = this.Stack.cards[0] - this.memoryregisters['r' + Calculator.keyStrokes[type]];
+					break;
+					case 'divide':
+					result = this.round(this.Stack.cards[0] / this.memoryregisters['r' + Calculator.keyStrokes[type]]);
+					break;
+					case 'multiply':
+					result = this.round(this.Stack.cards[0] * this.memoryregisters['r' + Calculator.keyStrokes[type]]);
+					break;
+				}
+				
+				this.rclpressed = false;
+				this.rclarithmetic = 'none';
+				if(newVal === NaN) {
+					return NaN;
+				}
+				else {
+					this.lastx = this.Stack.cards[0];
+					this.Stack.cards[0] = result;
+					this.displayBuffer = result;
+					this.operationDone = 1;
+					return this.getDisplayBuffer();
+				}
+			}
+			
+			if(type == 'minus' || type == 'plus' || type == 'divide' || type== 'multiply') {
+				this.rclarithmetic = type;
+				return this.getDisplayBuffer();
+			}
+			else {
+				this.rclarithmetic = 'none';
+			}
+				
 			if(type !== 'dot') {
 				if( this.memoryregisters['r' + Calculator.keyStrokes[type]] !== undefined) {
 					this.Stack.pushX();
@@ -357,21 +380,125 @@ var Calculator = Class.create({
 
 	handleFIX: function(type) {
 		if(this.fixpressed) {
+			if(Calculator.keyStrokes[type] === undefined) {
+				this.fixpressed = false;
+				$('mode_fix').removeClassName('on');
+				return this.getDisplayBuffer();
+			}
 			if(type !== 'dot') {
-				this.displayPrecision = Calculator.keyStrokes[type];
+				this.displayprecision = Calculator.keyStrokes[type];
 			}
 			if(type === 'dot') {
-				this.displayPrecision = 10;
+
+				$('mode_fix').removeClassName('on');
+				
+				if(this.displaymode !== 'fix') {
+					this.fixpressed = false;
+					return this.getDisplayBuffer(true);
+				}
+				
+				this.displayprecision = 10;
+				this.displaymode = 'normal';
+				this.db.simpleAdd('displaymode', this.displaymode);
+				this.fixpressed = false;
+				this.operationDone = 1;
+				return this.getDisplayBuffer(true);
 			}
-			this.db.simpleAdd('displayprecision', this.displayPrecision);
+			this.db.simpleAdd('displayprecision', this.displayprecision);
+			this.displaymode = 'fix';
+			this.db.simpleAdd('displaymode', this.displaymode);
 			this.fixpressed = false;
-			$('mode_fix').removeClassName('on');			
-			return this.displayBuffer;
+			$('mode_sci').removeClassName('on');
+			$('mode_eng').removeClassName('on');
+			this.operationDone = 1;
+			return this.getDisplayBuffer(true);
 		}
 		else {
 			return 'NOOP';
 		}
 	},
+	handleSCI: function(type) {
+		if(this.scipressed) {
+			if(Calculator.keyStrokes[type] === undefined) {
+				this.scipressed = false;
+				return this.getDisplayBuffer();
+			}
+			if(type !== 'dot') {
+				this.displayprecision = Calculator.keyStrokes[type];
+			}
+			
+			if(type === 'dot') {
+				$('mode_sci').removeClassName('on');
+				
+				if(this.displaymode !== 'sci') {
+					this.scipressed = false;
+					return this.getDisplayBuffer(true);
+				}
+				
+				this.displayprecision = 10;
+				this.displaymode = 'normal';
+				this.db.simpleAdd('displaymode', this.displaymode);
+				this.scipressed = false;
+				this.operationDone = 1;
+				return this.getDisplayBuffer(true);
+			}
+			
+			this.db.simpleAdd('displayprecision', this.displayprecision);
+			this.displaymode = 'sci';
+			this.db.simpleAdd('displaymode', this.displaymode);
+			this.scipressed = false;
+			$('mode_fix').removeClassName('on');
+			$('mode_eng').removeClassName('on');	
+			this.operationDone = 1;
+			return this.getDisplayBuffer(true);
+		}
+		else {
+			return 'NOOP';
+		}
+	},
+	
+	handleENG: function(type) {
+		if(this.engpressed) {
+
+			if(Calculator.keyStrokes[type] === undefined) {
+				this.engpressed = false;
+				return this.getDisplayBuffer();
+			}
+			if(type !== 'dot') {
+				this.displayprecision = Calculator.keyStrokes[type];
+			}
+			
+			if(type === 'dot') {
+				$('mode_eng').removeClassName('on');
+				
+				if(this.displaymode !== 'eng') {
+					this.engpressed = false;
+					return this.getDisplayBuffer(true);
+				}
+				
+				this.displayprecision = 10;
+				this.displaymode = 'normal';
+				this.db.simpleAdd('displaymode', this.displaymode);
+				this.engpressed = false;
+				this.operationDone = 1;
+				return this.getDisplayBuffer(true);
+				
+			}
+			
+			this.db.simpleAdd('displayprecision', this.displayprecision);
+			this.displaymode = 'eng';
+			this.db.simpleAdd('displaymode', this.displaymode);
+			this.engpressed = false;
+			$('mode_fix').removeClassName('on');
+			$('mode_sci').removeClassName('on');	
+			this.operationDone = 1;
+			return this.getDisplayBuffer(true);
+		}
+		else {
+			return 'NOOP';
+		}
+	},
+	
 
 	handleNumbersWithFunctions: function(type) {
 		if(type === 'seven' && this.mode_g == true) {
@@ -387,30 +514,14 @@ var Calculator = Class.create({
 
 		if(type === 'five' && this.mode_g == true) {
 			this.resetModes();
-			if(this.displaymode !== 'sci') {
-				$('mode_eng').removeClassName('on');
-				$('mode_sci').addClassName('on');
-				this.displaymode = 'sci';
-			}
-			else {
-				$('mode_sci').removeClassName('on');
-				this.displaymode = 'normal';
-			}	
-			this.db.simpleAdd('displaymode', this.displaymode);
+			$('mode_sci').addClassName('on');
+			this.scipressed = true;
 			return this.getDisplayBuffer();
 		}
 		if(type === 'six' && this.mode_g == true) {
 			this.resetModes();
-			if(this.displaymode !== 'eng') {
-				$('mode_sci').removeClassName('on');
-				$('mode_eng').addClassName('on');
-				this.displaymode = 'eng';
-			}
-			else {
-				$('mode_eng').removeClassName('on');
-				this.displaymode = 'normal';
-			}	
-			this.db.simpleAdd('displaymode', this.displaymode);
+			$('mode_eng').addClassName('on');	
+			this.engpressed = true;
 			return this.getDisplayBuffer();
 		}
 
@@ -481,7 +592,7 @@ var Calculator = Class.create({
 			this.mode_g = false;
 			//this.displayBuffer = '';
 			this.fixpressed = true;
-			return this.displayBuffer;
+			return this.getDisplayBuffer();
 		}		
 		if(type === 'one' && this.mode_g == true) {
 			var retval = this.Stack.cards[0].toString(16);
@@ -560,19 +671,31 @@ var Calculator = Class.create({
 
 	doCommand: function(type) {
 		var stringValX = this.Stack.cards[0].toString();
-		if(Calculator.keyStrokes[type] !== undefined) {			
-			// memory ops
 
+		// memory ops
+
+		if((Calculator.keyStrokes[type] !== undefined) || type === 'divide' || type === 'plus' || type ==='minus' || type === 'multiply') {
 			var storageResult = this.handleStorage(type);
 			if(storageResult !== 'NOOP') {
 				return storageResult;
 			}
+		}
 
-			// FIX
+		if(Calculator.keyStrokes[type] !== undefined) {			
+
+			// FIX, SCI, ENG
 
 			var fixResult = this.handleFIX(type);
 			if(fixResult !== 'NOOP') {
 				return fixResult;
+			}
+			var sciResult = this.handleSCI(type);
+			if(sciResult !== 'NOOP') {
+				return sciResult;
+			}
+			var engResult = this.handleENG(type);
+			if(engResult !== 'NOOP') {
+				return engResult;
 			}
 			// numbers that have secondary or tertiary functions
 			var numbersWithFunctionsResult = this.handleNumbersWithFunctions(type);
@@ -609,6 +732,30 @@ var Calculator = Class.create({
 			return this.getDisplayBuffer();
 		}
 		else {
+			
+			// damage control in case ENG, FIX or SCI were pressed
+			if(this.engpressed) {
+				this.engpressed = false;
+				if(this.displaymode !== 'eng') {
+					$('mode_eng').removeClassName('on');
+				}
+				return 'ERROR';
+			}
+			if(this.scipressed) {
+				this.scipressed = false;
+				if(this.displaymode !== 'sci') {
+					$('mode_sci').removeClassName('on');
+				}
+				return 'ERROR';
+			}
+			if(this.fixpressed) {
+				this.fixpressed = false;
+				if(this.displaymode !== 'fix') {
+					$('mode_fix').removeClassName('on');
+				}
+				return 'ERROR';
+			}
+			
 			switch(type) {			
 				case 'sigmaplus':
 				if(this.mode_f) {
@@ -716,6 +863,7 @@ var Calculator = Class.create({
 							this.operationDone = false;
 						}
 						this.enterPressed = 1;
+						return this.getDisplayBuffer(true);
 					}
 				}
 				break;
@@ -761,6 +909,7 @@ var Calculator = Class.create({
 				this.operationDone = 1;
 				break;
 				case 'multiply':
+				this.lastx = this.Stack.cards[0];
 				if(this.mode_g == true) {
 					this.resetModes();
 					this.Stack.cards[0] = this.round(this.Stack.cards[0] * 180 / Math.PI);
@@ -771,12 +920,8 @@ var Calculator = Class.create({
 				else {
 					
 					if(this.mode_f == true) {
-						//BLERK
-						
-					//console.log(this.conversion + '  ' + Math.cos(this.Stack.cards[1]));
 					var newX = this.round(this.Stack.cards[0] * Math.cos(this.Stack.cards[1] * this.conversion));
 					var newY = this.round(this.Stack.cards[0] * Math.sin(this.Stack.cards[1] * this.conversion));
-					console.log(newX + ' and ' + newY);
 					this.Stack.cards[0] = newX;
 					this.Stack.cards[1] = newY;
 					this.displayBuffer = this.Stack.cards[0].toString();
@@ -808,7 +953,45 @@ var Calculator = Class.create({
 					if(this.mode_f == true) {
 						//BLORK
 						var r = Math.sqrt(Math.pow(this.Stack.cards[0], 2) + Math.pow(this.Stack.cards[1], 2));
-						var t = Math.atan(this.Stack.cards[1] / this.Stack.cards[0]) / this.conversion;
+								
+						var t = null;
+						
+						if (this.Stack.cards[0] == 0) {
+							if (this.Stack.cards[1] == 0) {
+								t = 0;
+							}
+							else {
+								if (this.Stack.cards[1] > 0) {
+									t = Math.PI/2;
+								}
+								else {
+									t = -Math.PI/2;
+								}
+							}
+						}
+						else {							
+							// need to calculate t here to ensure x != 0
+							t = Math.atan(this.Stack.cards[1] / this.Stack.cards[0]);
+							if (t < 0) { 
+								// 2nd or 4th quadrant
+								if (this.Stack.cards[0] < 0) {
+									// 2nd quadrant
+									t = Math.PI + t;	
+									// 4th qudrant, just use the value of t which is negative 
+								}
+							}
+							else {
+								// 1st or 3rd quadrant
+								if (this.Stack.cards[0] > 0) {
+									// 1st quadrant, just use the value of t which is positive
+								}	
+								else {
+									// 3rd quadrant
+									t = Math.PI + t;	
+								}
+							}
+						}
+						t= t / this.conversion;
 						this.Stack.cards[0] = r;
 						this.Stack.cards[1] = t;
 						this.displayBuffer = this.Stack.cards[0];
@@ -1173,21 +1356,7 @@ var Calculator = Class.create({
 				case 'backspace':			
 
 				if(this.mode_g == true) {
-					/*
 
-					old more complex method to compute s. probably wrong.
-
-					var meanx = this.memoryregisters['r3'] / this.memoryregisters['r2'];
-					var meany = this.memoryregisters['r5'] / this.memoryregisters['r2'];
-					var sumofitemsminusmeanxsquare = 0;
-					var sumofitemsminusmeanysquare = 0;
-					for(i=0;i<this.statisticsregisters.length;i++) {
-						sumofitemsminusmeanxsquare = sumofitemsminusmeanxsquare + Math.pow((this.statisticsregisters[i].valX - meanx), 2);
-						sumofitemsminusmeanysquare = sumofitemsminusmeanysquare + Math.pow((this.statisticsregisters[i].valY - meany), 2);
-					}
-					var sdx = Math.sqrt(sumofitemsminusmeanxsquare / this.memoryregisters['r2']);
-					var sdy = Math.sqrt(sumofitemsminusmeanysquare / this.memoryregisters['r2']);
-					*/
 					var M = (this.memoryregisters['r2'] * this.memoryregisters['r4']) - Math.pow(this.memoryregisters['r3'], 2);
 					var N = (this.memoryregisters['r2'] * this.memoryregisters['r6']) - Math.pow(this.memoryregisters['r5'], 2);
 					var sdx = Math.sqrt(M / (this.memoryregisters['r2'] * (this.memoryregisters['r2'] - 1)));
@@ -1320,6 +1489,8 @@ var Calculator = Class.create({
 				case 'eng':
 				$('mode_eng').addClassName('on');
 				break;
+				case 'fix':
+				$('mode_fix').addClassName('on');
 				default:
 				break;
 			}
@@ -1351,7 +1522,7 @@ var Calculator = Class.create({
 	},
 	getDisplayPrecision: function(value) {
 		if(value !== null) {
-			eval('this.displayPrecision = ' + value);
+			eval('this.displayprecision = ' + value);
 		}
 	},
 	setupMemDb: function() {
@@ -1363,7 +1534,7 @@ var Calculator = Class.create({
 		this.db.simpleGet("displaystack", this.getStackDisplay.bind(this), this.getListFailed);
 		this.db.simpleGet("displaymode", this.getDisplayMode.bind(this), this.getListFailed);
 		this.db.simpleGet("displayprecision", this.getDisplayPrecision.bind(this), this.getListFailed);
-		this.db.simpleGet("cmode", this.getTrigMode.bind(this), this.getListFailed);
+		this.db.simpleGet("cmode", this.getTrigMode.bind(this), this.getListFailed);		
 	},
 });
 

@@ -79,7 +79,9 @@ var PreferencesAssistant = Class.create({
 		this.hapticAttributes = null;
 		this.stackDisplayModel = null;
 		this.stackDisplayAttributes = null;
-		this.controller.stopListening('haptictoggle', Mojo.Event.propertyChange, this.onHapticChange);
-		this.controller.stopListening('stacktoggle', Mojo.Event.propertyChange, this.onStackDisplayChange);
+		var hapticChangeBind = this.onHapticChange.bindAsEventListener(this);
+		var stackDisplayChangeBind = this.onStackDisplayChange.bindAsEventListener(this);
+		this.controller.stopListening('haptictoggle', Mojo.Event.propertyChange, hapticChangeBind);
+		this.controller.stopListening('stacktoggle', Mojo.Event.propertyChange, stackDisplayChangeBind);
 	}
 });
