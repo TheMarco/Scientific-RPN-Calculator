@@ -307,5 +307,8 @@
 }
 .helppage p {
 	padding: 0;
-	font-size: 15px;
+	font-size: 16px;
+}
+.helppage p.buttonsequence {
+	margin: 10px 0;
 }
