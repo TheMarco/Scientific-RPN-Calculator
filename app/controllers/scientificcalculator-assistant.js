@@ -10,7 +10,7 @@ var ScientificcalculatorAssistant = Class.create({
 		label: $L('Calculator'), 
 		items: [	{label: "About...", command: 'do-aboutCalculator'}, 
 		{label: "Preferences", command: 'do-preferences'},
-		{label: "Help", command: 'do-help'},
+		{label: "Help", command: 'do-support'},
 		{label:$L('Edit'), items: [{label:$L('Cut'), command:Mojo.Menu.cutCmd, shortcut:'x', disabled:true},
 		{label:$L('Copy'), command:Mojo.Menu.copyCmd, shortcut:'c', disabled:true}, 
 		{label:$L('Paste'), command:Mojo.Menu.pasteCmd, shortcut:'v', disabled:true}]

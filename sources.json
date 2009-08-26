@@ -21,9 +21,14 @@
     "source": "app\/controllers\/stackinspector-assistant.js",
     "scenes": "stackinspector"
   },
+{"source": "javascript\/support_info.js"},
 {
     "source": "app\/controllers\/help-assistant.js",
     "scenes": "help"
+  },
+{
+    "source": "app\/controllers\/support-assistant.js",
+    "scenes": "support"
   },
 {
     "source": "app\/controllers\/helppage-assistant.js",
