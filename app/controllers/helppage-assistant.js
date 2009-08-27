@@ -12,3 +12,4 @@ var Help4Assistant = Class.create({});
 var Help5Assistant = Class.create({});
 var Help6Assistant = Class.create({});
 var Help7Assistant = Class.create({});
+var Help8Assistant = Class.create({});
