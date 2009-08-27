@@ -14,7 +14,9 @@ var HelpAssistant = Class.create({
 			{id: 'c3', label: '3', value: 'The Stack and Data Storage'},
 			{id: 'c4', label: '4', value: 'Numeric Functions'},
 			{id: 'c5', label: '5', value: 'Statistics Functions'},
-			{id: 'c6', label: '6', value: 'Key Quick Reference'}
+			{id: 'c6', label: '6', value: 'Display & Continuous Memory'},
+			{id: 'c7', label: '7', value: 'Keyboard Quick Reference'},
+			
 		];
 
 		this.controller.setupWidget("helpcontents",

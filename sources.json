@@ -32,6 +32,6 @@
   },
 {
     "source": "app\/controllers\/helppage-assistant.js",
-    "scenes": ["help1", "help2", "help3", "help4", "help5", "help6"]
+    "scenes": ["help1", "help2", "help3", "help4", "help5", "help6", "help7"]
   }
 ]

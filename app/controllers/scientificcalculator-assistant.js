@@ -28,6 +28,7 @@ var ScientificcalculatorAssistant = Class.create({
 		this.setupResizeHandler();
 		this.controller.setupWidget(Mojo.Menu.appMenu, {omitDefaultItems:true}, this.appMenuModel);
 		this.onWindowResize();
+		$('firstline').innerHTML = Utils.renderDisplay('0');
 	},
 	cleanup: function() {
 		this.calculator = null;
@@ -73,7 +74,7 @@ var ScientificcalculatorAssistant = Class.create({
 			$('firstline').innerHTML = Utils.renderDisplay(this.calculator.doCommand(Calculator.keyMap[event.keyCode]));
 		}		
 		if(this.calculator.displayStack) {
-			$('infoline').innerHTML = $('infoline').innerHTML = Utils.renderStackInfo(this.calculator.Stack.cards);
+			$('infoline').innerHTML = Utils.renderStackInfo(this.calculator.Stack.cards);
 		}
 		else {
 			$('infoline').innerHTML = '';

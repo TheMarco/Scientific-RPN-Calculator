@@ -7,7 +7,7 @@ DO NOT DISTRIBUTE Palm .ipk PACKAGES OF THIS SOFTWARE
 
 var Calculator = Class.create({
 	initialize: function() {
-		this.operationDone = 0;
+		this.operationDone = 1;
 		this.enterPressed = 0;
 		this.cmode = 'rad';
 		this.displaymode = 'normal';
@@ -15,8 +15,8 @@ var Calculator = Class.create({
 		this.conversion = '1.0';
 		this.mode_f = false;
 		this.mode_g = false;
-		this.displayBuffer = '';
-		this.lastx = null;
+		this.displayBuffer = '0';
+		this.lastx = 0;
 		this.stopressed = false;
 		this.rclpressed = false;
 		this.stoarithmetic = 'none';
@@ -25,6 +25,16 @@ var Calculator = Class.create({
 		this.engpressed = false;
 		this.scipressed = false;
 		this.memoryregisters = {};
+		this.memoryregisters['r0'] = 0;
+		this.memoryregisters['r1'] = 0;
+		this.memoryregisters['r2'] = 0;
+		this.memoryregisters['r3'] = 0;
+		this.memoryregisters['r4'] = 0;
+		this.memoryregisters['r5'] = 0;
+		this.memoryregisters['r6'] = 0;
+		this.memoryregisters['r7'] = 0;
+		this.memoryregisters['r8'] = 0;
+		this.memoryregisters['r9'] = 0;		
 		this.statisticsregisters = [];
 		this.displayprecision = 10;
 		this.conversionfactor = 1;
@@ -844,6 +854,7 @@ var Calculator = Class.create({
 				break;
 				case 'enter':
 				if(this.mode_f) {
+					this.Stack.pushX();
 					this.Stack.cards[0] = Math.random();
 					this.resetModes();
 					this.displayBuffer = this.Stack.cards[0];

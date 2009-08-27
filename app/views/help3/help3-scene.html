@@ -4,6 +4,143 @@
 	</div>
 	<div class="aboutcontent">
 		<h1>The Stack and Data Storage</h1>
-		<p>Coming soon.</p>
+		
+		<h2>Table of Contents</h2>
+		<ul>
+			<li><a href="#stack">The Stack</a></li>
+			<li><a href="#stackmovement">Stack Movement</a></li>
+			<li><a href="#stackmanipulation">Stack Manipulation</a></li>
+			<li><a href="#lastx">LASTx</a></li>
+			<li><a href="#undo">UNDO</a></li>
+			<li><a href="#stoops">Storage Register Operations</a></li>
+			<li><a href="#recall">Recalling</a></li>
+			<li><a href="#stoarithmetic">Storage Arithmetic</a></li>
+		</ul>
+		
+		<p>Unlike algebraic calculators, this application uses a logic called "Reverse Polish Notation" (RPN). While Algebraic calculators place operators between the numbers (for example 3 + 5), RPN places them after the numbers.</p>
+		<p>With RPN we can solve complicated calculations without the need of parenthesis or punctuation. This is possible because the calculator automatically retains and returns intermediate results. The magic behind this is the automatic memory stack and the <img src="images/help/btn_enter.png" alt="enter" /> key. The amount of keystrokes needed to perform operations is usually much smaller on an RPN calculator than it is on an algebraic one. While it takes a little while to get used to solving problems the RPN way most people won't want to go back to the algebraic way after getting to know RPN.</p>
+		<h2><a name="stack"></a>The Stack</h2>
+		<p>This calculator features a 5-level numeric stack in which intermediate results are automatically stored. The stack works on a last-in, first-out basis. Look at this as a pile of office paperwork on which new papers are placed at the bottom of the pile as more work comes in. Now let's assume we process the paperwork by always removing the paper on the bottom of the pile and deal with it. This means that older paperwork will stay on the pile unless no new paperwork is brought in for a longer period of time. As a last rule, let's assume that if the pile becomes higher than 5 items we start feeling overworked and just silently discard the item on top of the pile. No one is gonna need that anymore anyway since it's been sitting there for such a long time!</p>
+		<p>The number visible in the calculator display is the X register. Numbers that are keyed in or numbers that are the result of an operator will displayed and placed in the X register. Using the <img src="images/help/btn_enter.png" alt="enter" /> to terminate digit entry will cause the stack to lift (a new piece of paperwork is placed on the bottom of the pile).</p>
+		<h3><a name="stackmovement"></a>Stack Movement</h3>
+		<p>The stack can lift, drop or change without lifting or dropping. Let's take a look at all three scenarios. First, let's see what happens when we press the <img src="images/help/btn_pi.png" alt="pi" /> key:</p>
+		<table class="helptable" cellpadding="0" cellspacing="0">
+			<tr><th>ID</th><th>before</th><th>after</th></tr>
+			<tr><th>B</th><td><em>b</em></td><td><em>a</em></td></tr>
+			<tr><th>A</th><td><em>a</em></td><td><em>z</em></td></tr>
+			<tr><th>Z</th><td><em>z</em></td><td><em>y</em></td></tr>
+			<tr><th>Y</th><td><em>y</em></td><td><em>x</em></td></tr>
+			<tr><th>X</th><td><em>x</em></td><td><em>&#928;</em></td></tr>
+		</table>
+		<p>As you can see, the stack is lifted. This means that all numbers in the stack have moved up by one position. The value that used to be in the X register is replaced by the number &#928;, the value that used to be in the X register is now in the Y register, the value that used to be in the Y register is now in the Z register, and so on. The value that used to be in the B register is lost. It's been pushed off the stack. (We threw away the paper) Now let's take a look at a stack drop. We'll cause one by pressing the <img src="images/help/btn_plus.png" alt="plus" /> key.</p>
+		<table class="helptable" cellpadding="0" cellspacing="0">
+			<tr><th>ID</th><th>before</th><th>after</th></tr>
+			<tr><th>B</th><td><em>b</em></td><td><em>b</em></td></tr>
+			<tr><th>A</th><td><em>a</em></td><td><em>b</em></td></tr>
+			<tr><th>Z</th><td><em>z</em></td><td><em>a</em></td></tr>
+			<tr><th>Y</th><td><em>y</em></td><td><em>z</em></td></tr>
+			<tr><th>X</th><td><em>x</em></td><td><em>x + y</em></td></tr>
+		</table>
+		<p>The stack has now dropped. This happens with most functions on the calculator. Pressing <img src="images/help/btn_plus.png" alt="plus" /> has added the value of x to the value of x and placed the result in the x register. Because we now need only one spot to hold the two added values the stack drops. The Y register now contains the value that used to be in the Z register, the Z register now contains the value that used to be in the A register and the A register now contains the value that used to be in the B register. Finally, the b register now contains the same number as the a register rather than ending up with a stack with one less item. The value on top of the stack (b) has been copied and is now placed in both the A and the B register. This behavior can come in quite handy with certain calculations.</p>
+		<p>A third possible scenario is when the value in the X register changes without causing a stack lift or a stack drop. Let's press <img src="images/help/btn_sqrt.png" alt="square root" />.</p>
+		<table class="helptable" cellpadding="0" cellspacing="0">
+			<tr><th>ID</th><th>before</th><th>after</th></tr>
+			<tr><th>B</th><td><em>b</em></td><td><em>b</em></td></tr>
+			<tr><th>A</th><td><em>a</em></td><td><em>a</em></td></tr>
+			<tr><th>Z</th><td><em>z</em></td><td><em>z</em></td></tr>
+			<tr><th>Y</th><td><em>y</em></td><td><em>y</em></td></tr>
+			<tr><th>X</th><td><em>x</em></td><td><em>&radic;x</em></td></tr>
+		</table>
+		<p>As you can see nothing has happened to the stack now. The value of x has simply changed into &radic;x. In our pile of paperwork analogy this means we took the paper on the bottom of the pile, made some notes on it and put it back on the bottom.</p>
+		<h3><a name="stackmanipulation"></a>Stack manipulation</h3>
+		<p>We can manipulate the stack in various ways. First let's take a further look at the <img src="images/help/btn_enter.png" alt="enter" /> key. first we press <img src="images/help/btn_one.png" alt="1" /></p>
+		<table class="helptable" cellpadding="0" cellspacing="0">
+			<tr><th>ID</th><th>before</th><th>after</th></tr>
+			<tr><th>B</th><td><em>b</em></td><td><em>a</em></td></tr>
+			<tr><th>A</th><td><em>a</em></td><td><em>z</em></td></tr>
+			<tr><th>Z</th><td><em>z</em></td><td><em>y</em></td></tr>
+			<tr><th>Y</th><td><em>y</em></td><td><em>x</em></td></tr>
+			<tr><th>X</th><td><em>x</em></td><td><em>1</em></td></tr>
+		</table>
+		<p>The value in the X register is now 1. The stack has lifted, causing the value that used to be in the b register to be lost. It's been taken off the pile.Now let's press <img src="images/help/btn_enter.png" alt="enter" />.</p>
+		<table class="helptable" cellpadding="0" cellspacing="0">
+			<tr><th>ID</th><th>before</th><th>after</th></tr>
+			<tr><th>B</th><td><em>a</em></td><td><em>z</em></td></tr>
+			<tr><th>A</th><td><em>z</em></td><td><em>y</em></td></tr>
+			<tr><th>Z</th><td><em>y</em></td><td><em>x</em></td></tr>
+			<tr><th>Y</th><td><em>x</em></td><td><em>1</em></td></tr>
+			<tr><th>X</th><td><em>1</em></td><td><em>1</em></td></tr>
+		</table>
+		<p>The stack has lifted again. The display still shows 1 which is now in the X register. HOWEVER, if we would now press an operator key or key in new digits this value will be overwritten. The 1 is placed in the X register without stack lift. Let's press <img src="images/help/btn_two.png" alt="2" />.</p>
+		<table class="helptable" cellpadding="0" cellspacing="0">
+			<tr><th>ID</th><th>before</th><th>after</th></tr>
+			<tr><th>B</th><td><em>a</em></td><td><em>z</em></td></tr>
+			<tr><th>A</th><td><em>z</em></td><td><em>y</em></td></tr>
+			<tr><th>Z</th><td><em>y</em></td><td><em>x</em></td></tr>
+			<tr><th>Y</th><td><em>x</em></td><td><em>1</em></td></tr>
+			<tr><th>X</th><td><em>1</em></td><td><em>2</em></td></tr>
+		</table>
+		<p>As you can see the value of 1 that was in the X register is now overwritten with our 2. Let's press <img src="images/help/btn_enter.png" alt="enter" /> again.</p>
+		<table class="helptable" cellpadding="0" cellspacing="0">
+			<tr><th>ID</th><th>before</th><th>after</th></tr>
+			<tr><th>B</th><td><em>z</em></td><td><em>y</em></td></tr>
+			<tr><th>A</th><td><em>y</em></td><td><em>x</em></td></tr>
+			<tr><th>Z</th><td><em>x</em></td><td><em>1</em></td></tr>
+			<tr><th>Y</th><td><em>1</em></td><td><em>2</em></td></tr>
+			<tr><th>X</th><td><em>2</em></td><td><em>2</em></td></tr>
+		</table>
+		<p>Again, the stack has lifted. Note that the value of 2 currently in the X register will again be overwritten as soon as we key in a new number or press an operator / function key. Once again, the value that used to be in the B register (z) has been pushed off the stack.</p>
+		<p>Hopefully you're starting to get the hang of this!</p>
+		<h3>Other ways of manipulating the stack</h3>
+		<p><img src="images/help/btn_roll.png" alt="roll" /> and <img src="images/help/btn_g.png" alt="g" /> <img src="images/help/btn_roll.png" alt="roll" /> will 'roll' the stack down or up. Let's take a look at rolling the stack down. We press <img src="images/help/btn_roll.png" alt="roll" />.</p>
+		<table class="helptable" cellpadding="0" cellspacing="0">
+			<tr><th>ID</th><th>before</th><th>after</th></tr>
+			<tr><th>B</th><td><em>b</em></td><td><em>x</em></td></tr>
+			<tr><th>A</th><td><em>a</em></td><td><em>b</em></td></tr>
+			<tr><th>Z</th><td><em>z</em></td><td><em>a</em></td></tr>
+			<tr><th>Y</th><td><em>y</em></td><td><em>z</em></td></tr>
+			<tr><th>X</th><td><em>x</em></td><td><em>y</em></td></tr>
+		</table>
+		<p>All values have dropped one position. The value at the bottom of the stack has now been placed on top of the stack. Rolling up by pressing <img src="images/help/btn_g.png" alt="g" /> <img src="images/help/btn_roll.png" alt="roll" /> will do the same thing but in the opposite direction.</p>
+		<table class="helptable" cellpadding="0" cellspacing="0">
+			<tr><th>ID</th><th>before</th><th>after</th></tr>
+			<tr><th>B</th><td><em>b</em></td><td><em>a</em></td></tr>
+			<tr><th>A</th><td><em>a</em></td><td><em>z</em></td></tr>
+			<tr><th>Z</th><td><em>z</em></td><td><em>y</em></td></tr>
+			<tr><th>Y</th><td><em>y</em></td><td><em>x</em></td></tr>
+			<tr><th>X</th><td><em>x</em></td><td><em>b</em></td></tr>
+		</table>
+		<p>All values have gone op one position. The value at the top of the stack has now been placed at the bottom of the stack.</p>
+		<p>The <img src="images/help/btn_swapxy.png" alt="swapxy" /> button will exchange the values in the X and the Y register.</p>
+		<table class="helptable" cellpadding="0" cellspacing="0">
+			<tr><th>ID</th><th>before</th><th>after</th></tr>
+			<tr><th>B</th><td><em>b</em></td><td><em>b</em></td></tr>
+			<tr><th>A</th><td><em>a</em></td><td><em>a</em></td></tr>
+			<tr><th>Z</th><td><em>z</em></td><td><em>z</em></td></tr>
+			<tr><th>Y</th><td><em>y</em></td><td><em>x</em></td></tr>
+			<tr><th>X</th><td><em>x</em></td><td><em>y</em></td></tr>
+		</table>
+		<p>Finally, this calculator features a stack inspector. Press <img src="images/help/btn_g.png" alt="g" /> <img src="images/help/btn_undo.png" alt="undo" /> to access it. The stack inspector can be used to freely manipulate the stack. You can use drag and drop to rearrange the stack to your liking and press 'apply' to make the changes final. Pressing 'revert' will discard all changes made in the stack inspector.</p>
+		<h3><a name="lastx"></a>LASTx</h3>
+		<p>The calculator has a special memory register which contains the last value that was in the X register before a numeric operation was performed. This is called the LASTx register. Pushing <img src="images/help/btn_g.png" alt="g" /> <img src="images/help/btn_enter.png" alt="enter" /> will recall this value and place it in the X register while lifting the stack.</p>
+		<h3><a name="undo"></a>UNDO</h3>
+		<p>In addition to the LASTx register, the calculator keeps a copy of the entire stack at all times. When performing any operation that changes the stack it will keep the values representing the stack before the operation was performed. Pressing <img src="images/help/btn_undo.png" alt="undo" /> will revert the stack to what it was before performing an operation.</p>
+		<h2><a name="stoops"></a>Storage Register Operations</h2>
+		<p>Your calculator has 10 storage registers that can hold any value you want it to remember for later use. The registers are named R<sub>0</sub> to R<sub>9</sub>. Values stored in these registers will persist between sessions with the calculator, even if the phone has been switched off inbetween sessions.</p>
+		<p>IMPORTANT: R<sub>2</sub> to R<sub>7</sub> are also used by the statistics functions which are discussed in another chapter of this guide. If you use statistics operations during your calculations make sure you only use R<sub>0</sub>, R<sub>1</sub>, R<sub>8</sub> and R<sub>9</sub>.</p>
+		<p>To store a value in a register use <img src="images/help/btn_sto.png" /> followed by <img src="images/help/btn_zero.png" alt="0"> to <img src="images/help/btn_nine.png" alt="9">. The value in the display at the moment of keying in this sequence will be stored in the register.</p>
+		<p>To clear a register, store the value 0 in that register.</p>
+		<h3><a name="recall"></a>Recalling</h3>
+		<p>To recall a previously stored value, use <img src="images/help/btn_rcl.png" alt="rcl" /> followed by <img src="images/help/btn_zero.png" alt="0"> to <img src="images/help/btn_nine.png" alt="9">. The value will be placed in the X register.</p>
+		<h3><a name="stoarithmetic"></a>Storage and Recall Arithmetic</h3>
+		<p>Let's say we don't want to just store a value but perform an arithmetic operation with it and then store the result in the same register. The calculator allows you to do this without the needing to use <img src="images/help/btn_rcl.png" alt="rcl" />.Let's say we have stored the value of 25 in R<sub>1</sub> and we want to add 5 to it and immediately replace the value of 25 with the result of this operation. We use:</p>
+		<p class="buttonsequence"><img src="images/help/btn_five.png" alt="5" /> <img src="images/help/btn_sto.png" alt="sto" /> <img src="images/help/btn_plus.png" alt="plus" /> <img src="images/help/btn_one.png" alt="one" /></p>
+		<p>The display still shows 5. The stack has not changed in any way. However, the value of 25 in R<sub>1</sub> has now been replaced by 25 + 5. When pressing <img src="images/help/btn_rcl.png" alt="rcl" /> <img src="images/help/btn_one.png" alt="1" /> the value of 30 will show in the display.</p>
+		<p>We can do a similar thing when recalling stored values. Let's assume the value of 32 is stored in R<sub>9</sub> and we have the value of 50 in our display after performing some calculations. To subtract the stored value from the 50 we have in the display we press:</p>
+		<p class="buttonsequence"><img src="images/help/btn_rcl.png" alt="rcl" /> <img src="images/help/btn_minus.png" alt="minus" /> <img src="images/help/btn_nine.png" alt="9" /></p>
+		<p>The display will show 18. The value in R<sub>9</sub> has not changed.</p>
+		<p>Storage arithmetic can be performed with all four arithmetic operators: <img src="images/help/btn_plus.png" alt="plus" />, <img src="images/help/btn_minus.png" alt="minus" />, <img src="images/help/btn_multiply.png" alt="multiply" /> and <img src="images/help/btn_divide.png" alt="divide" /></p>
+		
+		
 	</div>	
 </div>

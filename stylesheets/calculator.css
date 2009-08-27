@@ -376,3 +376,24 @@
 	padding: 0px 0px 0px 5px;
 	float:left;
 }
+
+
+.helptable td, .helptable th {
+	border-right: 1px #aaa solid;
+	border-bottom: 1px #aaa solid;
+	padding: 3px;
+	margin: 0;
+}
+.helptable td {
+	text-align: center;
+}
+.helptable th {
+	background: #333;
+	color: #fff;
+}
+
+.helptable {
+	border-top: 1px #aaa solid;
+	border-left: 1px #aaa solid;
+	margin: 10px 0;
+}
