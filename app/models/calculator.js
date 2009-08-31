@@ -596,6 +596,42 @@ var Calculator = Class.create({
 			return this.displayBuffer;
 		}
 
+		if(type === 'zero' && this.mode_g == true) {
+			// to h.ms
+			this.lastx = this.Stack.cards[0];
+			var h;
+			var m;
+			var s;
+			h = Math.floor(this.Stack.cards[0]);
+			m = 60 * (this.Stack.cards[0] - h);
+			h = h + Math.floor(m)/100;
+			s = 60 * (m - Math.floor(m));
+			h = h + Math.floor(s)/10000;
+			this.Stack.cards[0] = h.toFixed(4);
+			this.displayBuffer = this.Stack.cards[0].toString();
+			this.operationDone = 1;
+			this.resetModes();
+			console.log('WTF ' + this.displayBuffer);
+			return this.displayBuffer;
+		}
+		
+		if(type === 'dot' && this.mode_g == true) {
+			this.lastx = this.Stack.cards[0];
+			var h;
+			var m;
+			var s;
+			h = Math.floor(this.Stack.cards[0]);
+			m = (this.Stack.cards[0] - h) * 100;
+			h = h + Math.floor(m)/60;
+			s = (m - Math.floor(m)) * 100;
+			h = h + s/3600;
+			this.Stack.cards[0] = h.toFixed(4);
+			this.displayBuffer = this.Stack.cards[0].toString();
+			this.operationDone = 1;
+			this.resetModes();
+			return this.displayBuffer;
+		}
+		
 		if(type === 'four' && this.mode_g == true) {
 			$('mode_fix').addClassName('on');
 			$('mode_g').removeClassName('on');
@@ -1406,10 +1442,7 @@ var Calculator = Class.create({
 					this.operationDone = 1;
 					return this.getDisplayBuffer();
 				}
-				if(this.displayBuffer.toString().length === 1) {
-					this.displayBuffer = '';
-					return this.displayBuffer;
-				}
+
 				if(this.enterPressed === 1) {
 					this.displayBuffer = '';
 					// keep going: this.Stack.backSpace();
@@ -1424,6 +1457,11 @@ var Calculator = Class.create({
 					// cls
 					this.Stack.cards[0] = 0;
 					this.operationDone = 0;
+					return this.displayBuffer;
+				}
+				if(this.displayBuffer.toString().length === 1) {
+					this.Stack.cards[0] = 0;
+					this.displayBuffer = '';
 					return this.displayBuffer;
 				}
 				if(this.displayBuffer.toString().length > 0 && this.displayBuffer.toString() !== 0) {

@@ -23,9 +23,6 @@ StageAssistant.prototype.handleCommand = function(event) {
 			case 'do-aboutCalculator':
 			this.stageController.pushScene("about");
 			break;
-			case 'do-help':
-			this.stageController.pushScene("help");
-			break;
 			case 'do-support':
 			this.stageController.pushScene("support");
 			break;

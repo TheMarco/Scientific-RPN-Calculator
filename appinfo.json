@@ -1,6 +1,6 @@
 {
     "title": "Scientific Calculator",
-    "version": "1.0.40",
+    "version": "1.0.41",
     "type": "web",
     "main": "index.html",
     "id": "nl.i-marco.app.scientificcalculator",
