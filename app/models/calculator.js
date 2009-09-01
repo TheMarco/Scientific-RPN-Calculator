@@ -606,12 +606,11 @@ var Calculator = Class.create({
 			m = 60 * (this.Stack.cards[0] - h);
 			h = h + Math.floor(m)/100;
 			s = 60 * (m - Math.floor(m));
-			h = h + Math.floor(s)/10000;
-			this.Stack.cards[0] = h.toFixed(4);
+			h = h + s/10000;
+			this.Stack.cards[0] = this.round(h);
 			this.displayBuffer = this.Stack.cards[0].toString();
 			this.operationDone = 1;
 			this.resetModes();
-			console.log('WTF ' + this.displayBuffer);
 			return this.displayBuffer;
 		}
 		
@@ -625,7 +624,7 @@ var Calculator = Class.create({
 			h = h + Math.floor(m)/60;
 			s = (m - Math.floor(m)) * 100;
 			h = h + s/3600;
-			this.Stack.cards[0] = h.toFixed(4);
+			this.Stack.cards[0] = this.round(h);
 			this.displayBuffer = this.Stack.cards[0].toString();
 			this.operationDone = 1;
 			this.resetModes();
