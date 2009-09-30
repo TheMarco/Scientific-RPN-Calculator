@@ -804,9 +804,19 @@ var Calculator = Class.create({
 			switch(type) {			
 				case 'sigmaplus':
 				if(this.mode_f) {
+					
+					// hp manual says we clear memory registers, statistics and stack
+					
 					this.statisticsregisters = [];
+					this.memoryregisters['r2'] = 0;
+					this.memoryregisters['r3'] = 0;
+					this.memoryregisters['r4'] = 0;
+					this.memoryregisters['r5'] = 0;
+					this.memoryregisters['r6'] = 0;
+					this.memoryregisters['r7'] = 0;
+					this.db.simpleAdd("memoryregisters", JSON.stringify(this.memoryregisters));
 					this.db.simpleAdd("statisticsregisters", JSON.stringify(this.statisticsregisters));
-					this.Stack.clst();	
+					this.Stack.clst();
 					this.resetModes();
 					this.displayBuffer = '';
 				}
@@ -814,7 +824,6 @@ var Calculator = Class.create({
 					if(this.mode_g){
 						this.removeStatItem();
 						this.db.simpleAdd("statisticsregisters", JSON.stringify(this.statisticsregisters));
-						this.Stack.clst();
 						this.Stack.cards[0] = this.statisticsregisters.length;
 						this.displayBuffer = this.Stack.cards[0];
 						this.operationDone = 1;
@@ -824,7 +833,6 @@ var Calculator = Class.create({
 					else {
 						this.addStatItem();
 						this.db.simpleAdd("statisticsregisters", JSON.stringify(this.statisticsregisters));
-						this.Stack.clst();
 						this.Stack.cards[0] = this.statisticsregisters.length;						
 						this.displayBuffer = this.Stack.cards[0];
 						this.operationDone = 1;
@@ -920,7 +928,7 @@ var Calculator = Class.create({
 					return this.getDisplayBuffer();
 				}
 				this.lastx = this.Stack.cards[0];
-				this.Stack.dropOne(this.Stack.cards[0] + this.Stack.cards[1]);
+				this.Stack.dropOne(this.round(this.Stack.cards[0] + this.Stack.cards[1]));
 				this.Stack.stackDump();
 				this.displayBuffer = this.Stack.cards[0].toString();
 				this.operationDone = 1;
@@ -949,7 +957,7 @@ var Calculator = Class.create({
 					this.operationDone = 1;
 					return this.getDisplayBuffer();
 				}
-				this.Stack.dropOne(this.Stack.cards[1] - this.Stack.cards[0]);
+				this.Stack.dropOne(this.round(this.Stack.cards[1] - this.Stack.cards[0]));
 				this.Stack.stackDump();
 				this.displayBuffer = this.Stack.cards[0].toString();
 				this.operationDone = 1;
