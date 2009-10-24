@@ -35,7 +35,7 @@ _APP_Support_Email = {
 //_APP_Support_Phone = '555-555-5555'        // label = _APP_Support_Phone
 
 // Optional
-_APP_Publisher_URL = 'http://www.i-marco.nl' // label = _APP_PublisherName + “Website”
+_APP_Publisher_URL = 'http://www.i-marco.nl/palmpre' // label = _APP_PublisherName + “Website”
 _APP_Help_Resource = [
 						{ type : 'scene', label: 'User Manual', sceneName: 'help' } //Sample to include an FAQ scene
 					 ];

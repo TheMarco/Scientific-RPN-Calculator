@@ -1,36 +1,20 @@
-<div id="conversion">
-	<div class="palm-group">	
-		<div class="palm-group-title">Configure conversion button</div>
-		<table class="palm-divider labeled">
-			<tr>
-				<td class="left"></td>
-				<td class="label">
-					Property
-				</td>
-				<td class="right"></td>
-			</tr>
-		</table>
-		<div x-mojo-element="ListSelector" id="property" class="list"></div>
-		<table class="palm-divider labeled">
-			<tr>
-				<td class="left"></td>
-				<td class="label">
-					Unit in display
-				</td>
-				<td class="right"></td>
-			</tr>
-		</table>
-		<div x-mojo-element="ListSelector" id="convertfrom" class="list"></div>
-		<table class="palm-divider labeled">
-			<tr>
-				<td class="left"></td>
-				<td class="label">
-					Unit to convert to
-				</td>
-				<td class="right"></td>
-			</tr>
-		</table>
-		<div x-mojo-element="ListSelector" id="convertto" class="list"></div>
+<div class="palm-page-header">
+	<div class="palm-page-header-wrapper">
+	    <div id="appIcon" class="img_conversion"></div>                        
+		<div class="title">Conversion Setup</div>      
 	</div>
-	<div x-mojo-element="Button" id="apply"></div>
+</div>
+<div id="conversion">	
+	<div class="palm-group">
+	<div class="palm-group-title">Property</div>
+		<div x-mojo-element="ListSelector" id="property" class="list"></div>
+	</div>
+	<div class="palm-group">
+	<div class="palm-group-title">Unit in display</div>
+	<div x-mojo-element="ListSelector" id="convertfrom" class="list"></div>
+	</div>
+	<div class="palm-group">
+	<div class="palm-group-title">Unit to convert to</div>
+	<div x-mojo-element="ListSelector" id="convertto" class="list"></div>
+	</div>	
 </div>

@@ -38,15 +38,15 @@
 }
 
 .aboutcontent {
-	font-size: 14px;
-	padding: 60px 10px 0 10px;
+	font-size: 16px;
+	padding: 20px 10px 0 10px;
 	text-align: center;
 }
 .aboutcontent p {
 	margin:0;
 }
 #copyright {
-	font-size: 11px;
+	font-size: 14px;
 }
 
 #keys {
@@ -264,6 +264,9 @@
 .pref label {
 	float: left; line-height: 30px;font-size:18px;display:block;padding-top: 10px;padding-left: 10px;
 }
+#help .palm-row {
+	padding: 0 10px;
+}
 #helpcontents div.title {
 	text-align: left;
 	padding-left: 0;
@@ -291,6 +294,9 @@
 	height:10px;
 	overflow:hidden;
 }
+.helppage {
+	padding: 10px;
+}
 .helppage .aboutcontent {
 	text-align: left;
 }
@@ -305,7 +311,7 @@
 .helppage h3 {
 	font-size: 16px;
 }
-.helppage p {
+.helppage p, .helppage li {
 	padding: 0;
 	font-size: 16px;
 }
@@ -322,6 +328,57 @@
 	width:32px; 
 	height:32px;
 	background: url(../icon32x32.png) no-repeat center ;
+	padding: 10px 0px 0px 5px;
+	float:left;	
+}
+
+.img_helpicon {
+	position:absolute;
+	left:10px;
+	top:5px;
+	width:32px; 
+	height:32px;
+	background: url(../images/icon_help.png) no-repeat center ;
+	padding: 10px 0px 0px 5px;
+	float:left;	
+}
+.img_preferences {
+	position:absolute;
+	left:10px;
+	top:5px;
+	width:32px; 
+	height:32px;
+	background: url(../images/icon_settings.png) no-repeat center ;
+	padding: 10px 0px 0px 5px;
+	float:left;	
+}
+.img_info {
+	position:absolute;
+	left:10px;
+	top:5px;
+	width:32px; 
+	height:32px;
+	background: url(../images/icon_info.png) no-repeat center ;
+	padding: 10px 0px 0px 5px;
+	float:left;	
+}
+.img_conversion {
+	position:absolute;
+	left:10px;
+	top:5px;
+	width:32px; 
+	height:32px;
+	background: url(../images/icon_conversionconfig.png) no-repeat center ;
+	padding: 10px 0px 0px 5px;
+	float:left;	
+}
+.img_stackinspector {
+	position:absolute;
+	left:10px;
+	top:5px;
+	width:32px; 
+	height:32px;
+	background: url(../images/icon_stackinspector.png) no-repeat center ;
 	padding: 10px 0px 0px 5px;
 	float:left;	
 }

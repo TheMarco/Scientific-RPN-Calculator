@@ -11,17 +11,6 @@ var ConversionAssistant = Class.create({
 		this.calculator = calculator;
 	},
 	setup: function() {		
-		this.controller.setupWidget("apply",		
-		this.attributes = {
-			disabledProperty: 'disabled'
-		},
-
-		this.model = {
-			buttonLabel : "Apply",
-			buttonClass: 'primary',
-			disabled: false
-		});
-		this.controller.listen('apply', Mojo.Event.tap, this.onApplyClick.bindAsEventListener(this));
 
 		this.property = new Array();
 		this.unit = new Array();
@@ -124,6 +113,9 @@ var ConversionAssistant = Class.create({
 		this.controller.setupWidget("property",{}, this.propertymodel);
 
 		Mojo.Event.listen($("property"),Mojo.Event.propertyChange,this.onPropertyChange.bind(this));
+		Mojo.Event.listen($("convertto"),Mojo.Event.propertyChange,this.onApplyClick.bind(this));
+		Mojo.Event.listen($("convertfrom"),Mojo.Event.propertyChange,this.onApplyClick.bind(this));
+		
 
 		var fromitems = [];
 		for(i=0;i<this.unit[this.calculator.conversionConfig['propertyindex']].length;i++) {
@@ -152,6 +144,7 @@ var ConversionAssistant = Class.create({
 		this.frommodel.value = 1;
 		this.controller.modelChanged(this.frommodel, this); 
 		this.controller.modelChanged(this.tomodel, this); 
+		this.onApplyClick();
 	},
 
 	onApplyClick: function(event) {
@@ -194,7 +187,7 @@ var ConversionAssistant = Class.create({
 			this.unit[this.propertymodel.value][converttoindex]
 		);
 
-		this.controller.stageController.popScene();
+		//this.controller.stageController.popScene();
 	},
 	cleanup: function() {
 		this.unit = null;
@@ -207,6 +200,7 @@ var ConversionAssistant = Class.create({
 		var applyClickBind = this.onApplyClick.bindAsEventListener(this);
 		var propertyChangeBind = this.onPropertyChange.bind(this);
 		this.controller.stopListening('property', Mojo.Event.propertyChange, propertyChangeBind);
-		this.controller.stopListening('apply', Mojo.Event.tap, applyClickBind);
+		this.controller.stopListening('convertfrom', Mojo.Event.propertyChange, applyClickBind);
+		this.controller.stopListening('convertto', Mojo.Event.propertyChange, applyClickBind);
 	}
 });

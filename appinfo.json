@@ -1,9 +1,9 @@
 {
-    "title": "Scientific Calculator",
-    "version": "1.0.43",
+    "title": "Scientific RPN Calculator",
+    "version": "1.0.45",
     "type": "web",
     "main": "index.html",
-    "id": "nl.i-marco.app.scientificcalculator",
+    "id": "nl.i-marco.app.scientificcalculatorapp",
     "icon": "icon.png",
     "vendor": "Marco van Hylckama Vlieg",
     "vendorurl": "http://www.i-marco.nl/",
