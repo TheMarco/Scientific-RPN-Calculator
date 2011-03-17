@@ -39,7 +39,7 @@ var Calculator = Class.create({
 		this.displayprecision = 10;
 		this.conversionfactor = 1;
 		this.convDone = 0;
-		this.hapticFeedback = true;
+		this.hapticFeedback = false;
 		this.displayStack = true;
 		this.conversionConfig = {};
 		this.conversionConfig["tofactor"] = 1;
@@ -147,7 +147,7 @@ var Calculator = Class.create({
 		else {
 			this.hapticFeedback = false;
 		}
-		this.db.simpleAdd('hapticfeedback', this.hapticFeedback, function(){}, function(){});
+		this.db.add('hapticfeedback', this.hapticFeedback, function(){}, function(){});
 	},
 	setStackDisplayPrefs: function(value) {
 		if(value) {
@@ -158,7 +158,7 @@ var Calculator = Class.create({
 			this.displayStack = false;
 			$('infoline').innerHTML = '';			
 		}
-		this.db.simpleAdd('displaystack', this.displayStack, function(){}, function(){});
+		this.db.add('displaystack', this.displayStack, function(){}, function(){});
 	},
 	setConversions: function(from, to, property, propertyindex, fromvalue, tovalue) {		
 		// deal with unchanged values
@@ -186,7 +186,7 @@ var Calculator = Class.create({
 		this.conversionConfig['propertyindex'] = propertyindex;
 		this.conversionConfig['fromvalue'] = fromvalue;
 		this.conversionConfig['tovalue'] = tovalue;
-		this.db.simpleAdd("conversionconfig", JSON.stringify(this.conversionConfig), function(){}, function(){});
+		this.db.add("conversionconfig", JSON.stringify(this.conversionConfig), function(){}, function(){});
 
 	},
 	addStatItem: function() {
@@ -220,7 +220,7 @@ var Calculator = Class.create({
 			this.memoryregisters['r6'] = this.memoryregisters['r6'] + (this.statisticsregisters[i].valY * this.statisticsregisters[i].valY);
 			this.memoryregisters['r7'] = this.memoryregisters['r7'] + (this.statisticsregisters[i].valX * this.statisticsregisters[i].valY);	
 		}	
-		this.db.simpleAdd("memoryregisters", JSON.stringify(this.memoryregisters));
+		this.db.add("memoryregisters", JSON.stringify(this.memoryregisters).bind(this));
 	},
 
 	factorial: function(n) {
@@ -278,7 +278,7 @@ var Calculator = Class.create({
 
 	memToJSON: function() {
 		var obj = {};
-		for(i=0;i<9;i++) {
+		for(i=0;i<10;i++) {
 			if(this.memoryregisters['r' + i] !== undefined) {
 				obj['r' + i] = this.memoryregisters['r' + i];
 				entry = {};
@@ -313,16 +313,18 @@ var Calculator = Class.create({
 				}
 				else {
 					this.memoryregisters['r' + Calculator.keyStrokes[type]] = newVal;
-					this.db.simpleAdd('memoryregisters', this.memToJSON());
+					this.db.add('memoryregisters', this.memToJSON());
 					return this.getDisplayBuffer();
 				}
 			}
 			if(type !== 'dot' && Calculator.keyStrokes[type] !== undefined) {
 				this.memoryregisters['r' + Calculator.keyStrokes[type]] = this.Stack.cards[0];
-				this.db.simpleAdd('memoryregisters', this.memToJSON());
+				this.db.add('memoryregisters', this.memToJSON());
+				
 				this.stopressed = false;
 				$('mode_sto').removeClassName('on');
 				this.operationDone = 1;
+				//FOOOO
 			}
 			if(type == 'minus' || type == 'plus' || type == 'divide' || type== 'multiply') {
 				this.stoarithmetic = type;
@@ -410,14 +412,14 @@ var Calculator = Class.create({
 				
 				this.displayprecision = 10;
 				this.displaymode = 'normal';
-				this.db.simpleAdd('displaymode', this.displaymode);
+				this.db.add('displaymode', this.displaymode);
 				this.fixpressed = false;
 				this.operationDone = 1;
 				return this.getDisplayBuffer(true);
 			}
-			this.db.simpleAdd('displayprecision', this.displayprecision);
+			this.db.add('displayprecision', this.displayprecision);
 			this.displaymode = 'fix';
-			this.db.simpleAdd('displaymode', this.displaymode);
+			this.db.add('displaymode', this.displaymode);
 			this.fixpressed = false;
 			$('mode_sci').removeClassName('on');
 			$('mode_eng').removeClassName('on');
@@ -448,15 +450,15 @@ var Calculator = Class.create({
 				
 				this.displayprecision = 10;
 				this.displaymode = 'normal';
-				this.db.simpleAdd('displaymode', this.displaymode);
+				this.db.add('displaymode', this.displaymode);
 				this.scipressed = false;
 				this.operationDone = 1;
 				return this.getDisplayBuffer(true);
 			}
 			
-			this.db.simpleAdd('displayprecision', this.displayprecision);
+			this.db.add('displayprecision', this.displayprecision);
 			this.displaymode = 'sci';
-			this.db.simpleAdd('displaymode', this.displaymode);
+			this.db.add('displaymode', this.displaymode);
 			this.scipressed = false;
 			$('mode_fix').removeClassName('on');
 			$('mode_eng').removeClassName('on');	
@@ -489,16 +491,16 @@ var Calculator = Class.create({
 				
 				this.displayprecision = 10;
 				this.displaymode = 'normal';
-				this.db.simpleAdd('displaymode', this.displaymode);
+				this.db.add('displaymode', this.displaymode);
 				this.engpressed = false;
 				this.operationDone = 1;
 				return this.getDisplayBuffer(true);
 				
 			}
 			
-			this.db.simpleAdd('displayprecision', this.displayprecision);
+			this.db.add('displayprecision', this.displayprecision);
 			this.displaymode = 'eng';
-			this.db.simpleAdd('displaymode', this.displaymode);
+			this.db.add('displaymode', this.displaymode);
 			this.engpressed = false;
 			$('mode_fix').removeClassName('on');
 			$('mode_sci').removeClassName('on');	
@@ -519,7 +521,7 @@ var Calculator = Class.create({
 			$('mode_deg').addClassName('on');
 			$('mode_rad').removeClassName('on');
 			$('mode_grad').removeClassName('on');
-			this.db.simpleAdd('cmode', 'deg');
+			this.db.add('cmode', 'deg');
 			return this.getDisplayBuffer();
 		}
 
@@ -552,7 +554,7 @@ var Calculator = Class.create({
 			$('mode_rad').addClassName('on');
 			$('mode_deg').removeClassName('on');
 			$('mode_grad').removeClassName('on');
-			this.db.simpleAdd('cmode', 'rad');
+			this.db.add('cmode', 'rad');
 			return this.getDisplayBuffer();
 		}
 
@@ -571,7 +573,7 @@ var Calculator = Class.create({
 			$('mode_rad').removeClassName('on');
 			$('mode_deg').removeClassName('on');
 			$('mode_grad').addClassName('on');
-			this.db.simpleAdd('cmode', 'grad');
+			this.db.add('cmode', 'grad');
 			return this.getDisplayBuffer();
 		}
 		if(type === 'nine' && this.mode_f == true) {
@@ -717,10 +719,10 @@ var Calculator = Class.create({
 
 	doCommand: function(type) {
 		var stringValX = this.Stack.cards[0].toString();
-
 		// memory ops
 
 		if((Calculator.keyStrokes[type] !== undefined) || type === 'divide' || type === 'plus' || type ==='minus' || type === 'multiply') {
+			
 			var storageResult = this.handleStorage(type);
 			if(storageResult !== 'NOOP') {
 				return storageResult;
@@ -730,7 +732,6 @@ var Calculator = Class.create({
 		if(Calculator.keyStrokes[type] !== undefined) {			
 
 			// FIX, SCI, ENG
-
 			var fixResult = this.handleFIX(type);
 			if(fixResult !== 'NOOP') {
 				return fixResult;
@@ -815,8 +816,8 @@ var Calculator = Class.create({
 					this.memoryregisters['r5'] = 0;
 					this.memoryregisters['r6'] = 0;
 					this.memoryregisters['r7'] = 0;
-					this.db.simpleAdd("memoryregisters", JSON.stringify(this.memoryregisters));
-					this.db.simpleAdd("statisticsregisters", JSON.stringify(this.statisticsregisters));
+					this.db.add("memoryregisters", JSON.stringify(this.memoryregisters));
+					this.db.add("statisticsregisters", JSON.stringify(this.statisticsregisters));
 					this.Stack.clst();
 					this.resetModes();
 					this.displayBuffer = '';
@@ -824,7 +825,7 @@ var Calculator = Class.create({
 				else {
 					if(this.mode_g){
 						this.removeStatItem();
-						this.db.simpleAdd("statisticsregisters", JSON.stringify(this.statisticsregisters));
+						this.db.add("statisticsregisters", JSON.stringify(this.statisticsregisters));
 						this.Stack.cards[0] = this.statisticsregisters.length;
 						this.displayBuffer = this.Stack.cards[0];
 						this.operationDone = 1;
@@ -833,7 +834,7 @@ var Calculator = Class.create({
 					}
 					else {
 						this.addStatItem();
-						this.db.simpleAdd("statisticsregisters", JSON.stringify(this.statisticsregisters));
+						this.db.add("statisticsregisters", JSON.stringify(this.statisticsregisters));
 						this.Stack.cards[0] = this.statisticsregisters.length;						
 						this.displayBuffer = this.Stack.cards[0];
 						this.operationDone = 1;
@@ -1506,6 +1507,7 @@ SupportAssistant.prototype.cleanup = function(event) {
 				this.Stack.cards[1] = temp;
 				this.displayBuffer = this.Stack.cards[0];
 				this.resetModes();
+				this.operationDone = 1;
 				return this.getDisplayBuffer();
 				break;
 				case 'roll':
@@ -1627,15 +1629,15 @@ SupportAssistant.prototype.cleanup = function(event) {
 				}
 				break;
 				case 'eex':
-				if(this.displayBuffer.indexOf('e') > 0) {
+				if(this.displayBuffer.toString().indexOf('e') > 0) {
 					return this.displayBuffer;
 				}
 				if(this.mode_g == true) {
 					this.resetModes();
-					this.displayBuffer = this.displayBuffer + 'e-';
+					this.displayBuffer = this.displayBuffer + 'e-';					
 				}
 				else {
-					this.displayBuffer = this.displayBuffer + 'e';
+					this.displayBuffer = this.displayBuffer + 'e';					
 				}
 				return this.displayBuffer;
 				break;
@@ -1729,14 +1731,14 @@ SupportAssistant.prototype.cleanup = function(event) {
 	},
 	setupMemDb: function() {
 		this.db = new Mojo.Depot({name: 'scientificcalculator', version: 1, replace: false}, function(){}, function(){});
-		this.db.simpleGet("memoryregisters", this.getMemoryRegisters.bind(this), this.getListFailed);
-		this.db.simpleGet("statisticsregisters", this.getStatisticsRegisters.bind(this), this.getListFailed);
-		this.db.simpleGet("conversionconfig", this.getConversionConfig.bind(this), this.getListFailed);
-		this.db.simpleGet("hapticfeedback", this.getHapticFeedback.bind(this), this.getListFailed);
-		this.db.simpleGet("displaystack", this.getStackDisplay.bind(this), this.getListFailed);
-		this.db.simpleGet("displaymode", this.getDisplayMode.bind(this), this.getListFailed);
-		this.db.simpleGet("displayprecision", this.getDisplayPrecision.bind(this), this.getListFailed);
-		this.db.simpleGet("cmode", this.getTrigMode.bind(this), this.getListFailed);		
+		this.db.get("memoryregisters", this.getMemoryRegisters.bind(this), this.getListFailed);
+		this.db.get("statisticsregisters", this.getStatisticsRegisters.bind(this), this.getListFailed);
+		this.db.get("conversionconfig", this.getConversionConfig.bind(this), this.getListFailed);
+		this.db.get("hapticfeedback", this.getHapticFeedback.bind(this), this.getListFailed);
+		this.db.get("displaystack", this.getStackDisplay.bind(this), this.getListFailed);
+		this.db.get("displaymode", this.getDisplayMode.bind(this), this.getListFailed);
+		this.db.get("displayprecision", this.getDisplayPrecision.bind(this), this.getListFailed);
+		this.db.get("cmode", this.getTrigMode.bind(this), this.getListFailed);		
 	},
 });
 
