@@ -24,7 +24,7 @@
 _APP_Name = 'Scientific RPN Calculator'
 _APP_VersionNumber = Mojo.appInfo.version;
 _APP_PublisherName = 'Marco van Hylckama Vlieg'
-_APP_Copyright = '&copy; Copyright 2009 Marco van Hylckama Vlieg.'
+_APP_Copyright = '&copy; Copyright 2009-2011 Marco van Hylckama Vlieg.'
 
 // At least one of these three is required
 //_APP_Support_URL = 'http://pdn.palm.com'   // label = “Support Website”

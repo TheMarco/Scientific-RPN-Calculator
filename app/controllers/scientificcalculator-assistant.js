@@ -21,7 +21,17 @@ var ScientificcalculatorAssistant = Class.create({
 	initialize : function(calculator) {
 		this.calculator = calculator;
 	},
-
+	
+	setFS : function(val) {
+		if(val) {
+			this.controller.enableFullScreenMode(true);
+		}
+		else {
+			this.controller.enableFullScreenMode(false);			
+		}
+	},
+	
+	
 	setup: function() {
 		this.setupTapHandlers();
 		this.setupKeyHandlers();
@@ -113,6 +123,22 @@ var ScientificcalculatorAssistant = Class.create({
 			return;
 		}
 		var tappedButton = event.element().id;
+		
+		if (tappedButton == 'hyp') {
+			if(this.calculator.mode_g == true) {
+				if(this.calculator.fullscreen) {
+					this.controller.enableFullScreenMode(false);
+					this.calculator.fullscreen = false;
+					$('scientificcalculator-main').removeClassName('fs');
+				}
+				else {
+					this.controller.enableFullScreenMode(true);
+					this.calculator.fullscreen = true;
+					$('scientificcalculator-main').addClassName('fs');
+				}
+			}			
+		}
+		
 		if (tappedButton === '') {return;}
 		var out = this.calculator.doCommand(tappedButton);
 

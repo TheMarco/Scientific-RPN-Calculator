@@ -1,5 +1,36 @@
 /* Copyright 2009 by Marco van Hylckama Vlieg */
 
+#scientificcalculator-main {
+	background: url(../images/brushed-metal.jpg), -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(128,128,128,0.5)), to(rgba(128,128,128,0.5)), color-stop(.6,rgba(64,64,64,0.5)));
+}
+
+#scientificcalculator-main.fs #display {
+	width: 306px;
+	height: 56px;
+	margin: 7px auto 0 auto;
+	background: url(../images/display2.png);
+	box-shadow: inset 1px 1px 5px #333333;	color: #000;
+	overflow: hidden;
+}
+#scientificcalculator-main.fs #display-overlay {
+	background: url(../images/display_overlay.png);
+	position: absolute;
+	width: 306px;
+	height: 56px;
+	top: 7px;
+	left: 8px;
+	z-index: 10;
+}
+#scientificcalculator-main.fs, #about {
+	height: 480px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	width: 320px;
+
+}
+
 #display {
 	width: 306px;
 	height: 56px;
@@ -24,10 +55,8 @@
 	bottom: 0;
 	width: 320px;
 	border-width: 30px 0 30px 0;
-	background: url(../images/background.png);
 	-webkit-box-sizing: border-box;	
 }
-
 #about {
 	color: #ccc;
 }
@@ -53,6 +82,24 @@
 	margin-left: 8px;
 	margin-top: -6px;
 }
+
+#scientificcalculator-main.fs #keys {
+	margin-top: 0;
+}
+
+#scientificcalculator-main.fs #keys .keyrow:after {
+	content: ".";
+	display: block;
+	clear: both;
+	visibility: hidden;
+	line-height: 0;
+	height: 0;
+}
+
+#scientificcalculator-main.fs #keys .keyrow {
+	margin-bottom: 5px;
+}
+
 
 /* labels */
 
@@ -134,6 +181,7 @@
 }
 #infoline {
 		font-size: 10px;
+		width: 288px;
 		position: absolute;
 		text-align: left;
 		top:12px;
@@ -146,7 +194,7 @@
 #infoline .indicator {
 	display: block;
 	float: left;
-	width: 72px;
+	width: 69px;
 	height: 15px;
 	margin-right: 3px;
 }
