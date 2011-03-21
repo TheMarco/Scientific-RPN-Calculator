@@ -39,6 +39,14 @@ var ScientificcalculatorAssistant = Class.create({
 		this.controller.setupWidget(Mojo.Menu.appMenu, {omitDefaultItems:true}, this.appMenuModel);
 		this.onWindowResize();
 		$('firstline').innerHTML = Utils.renderDisplay('0');
+		this.pixi = false;
+		if(screen.height == 400) {
+			this.calculator.fullscreen = true;
+			this.controller.enableFullScreenMode(true);
+			$('scientificcalculator-main').addClassName('pixi');
+			$('k1').addClassName('hidden');
+			this.pixi = true;
+		}
 	},
 	cleanup: function() {
 		this.calculator = null;
@@ -119,11 +127,24 @@ var ScientificcalculatorAssistant = Class.create({
 	},
 
 	onTap: function(event) {
+		var tappedButton = event.element().id;
+		if(this.pixi) {
+			if(tappedButton === 'display-overlay') {
+				if($('k1').hasClassName('hidden')) {
+					$('k2').addClassName('hidden');
+					$('k1').removeClassName('hidden');
+				}
+				else {
+					$('k1').addClassName('hidden');
+					$('k2').removeClassName('hidden');				
+				}
+				return;
+			}
+		}
 		if(event.element().className.indexOf('button') < 0) {
 			return;
 		}
-		var tappedButton = event.element().id;
-		
+
 		if (tappedButton == 'hyp') {
 			if(this.calculator.mode_g == true) {
 				if(this.calculator.fullscreen) {
