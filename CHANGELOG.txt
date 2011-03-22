@@ -6,3 +6,9 @@
 - made sure conversions get rounded to prevent JS rounding errors
 - new feature: toggle fullscreen mode to prevent notifications from messing up your calculations
 - UI improvements (screen and background)
+
+
+
+- Pixi compatibility
+- eliminated all rounding errors
+- fixed a bug that broke the statistics functions

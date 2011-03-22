@@ -112,8 +112,8 @@
 #scientificcalculator-main.fs #keys .keyrow {
 	margin-bottom: 5px;
 }
-#scientificcalculator-main.pixi.fs #keys .keyrow {
-	margin-bottom: 2px;
+#scientificcalculator-main.fs.pixi #keys .keyrow {
+	margin-bottom: 3px;
 }
 
 /* labels */
@@ -225,7 +225,7 @@
 	position: absolute;
 	z-index: 9;
 	right: 10px;
-	top: 37px;
+	top: 39px;
 	text-align: right;	
 }
 

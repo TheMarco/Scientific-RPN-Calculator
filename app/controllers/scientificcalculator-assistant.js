@@ -41,8 +41,6 @@ var ScientificcalculatorAssistant = Class.create({
 		$('firstline').innerHTML = Utils.renderDisplay('0');
 		this.pixi = false;
 		if(screen.height == 400) {
-			this.calculator.fullscreen = true;
-			this.controller.enableFullScreenMode(true);
 			$('scientificcalculator-main').addClassName('pixi');
 			$('k1').addClassName('hidden');
 			this.pixi = true;

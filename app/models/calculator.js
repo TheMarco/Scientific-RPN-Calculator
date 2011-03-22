@@ -221,7 +221,7 @@ var Calculator = Class.create({
 			this.memoryregisters['r6'] = this.memoryregisters['r6'] + (this.statisticsregisters[i].valY * this.statisticsregisters[i].valY);
 			this.memoryregisters['r7'] = this.memoryregisters['r7'] + (this.statisticsregisters[i].valX * this.statisticsregisters[i].valY);	
 		}	
-		this.db.add("memoryregisters", JSON.stringify(this.memoryregisters).bind(this));
+		this.db.add("memoryregisters", JSON.stringify(this.memoryregisters));
 	},
 
 	factorial: function(n) {
@@ -272,18 +272,38 @@ var Calculator = Class.create({
 	},
 
 	round: function(number) {
-		// try to deal with stupid rounding errors
-		
-		// don't round really small numbers with an e in it
-		
-		if(number.toString().indexOf('e') > -1) {
+		var splittedNumber = number.toExponential().split("e"), 
+		mantissa, 
+		exponent, 
+		lastDigit, 
+		sign, 
+		count;
+		mantissa = splittedNumber[0];
+		exponent = splittedNumber[1];
+		if (mantissa[0] == '-') {
+			sign = '-';
+			mantissa = mantissa.substr(1);
+		} else {
+			sign = ''
+		}
+		if (mantissa.length <= 12) {
 			return number;
 		}
-		else {
-			return Math.round(parseFloat(number) * Math.pow(10, 10)) / Math.pow(10, 10);
+		mantissa = mantissa.substr(0, 12 + 1);
+		exponent = (parseFloat(exponent) - mantissa.length + 2) + "";
+		mantissa = mantissa.split('.').join('');
+		count = 1;
+		lastDigit = mantissa.substr(-1);
+		while (count <= 4 && (mantissa.substr(-(++count), 1) == lastDigit)) {};
+		if (--count >= 3) {
+			mantissa = mantissa + '.' + mantissa.substr(-count);
+			while (mantissa.length < 18) {
+				mantissa = mantissa + mantissa.substr(-count);
+			} 
+			number = sign + mantissa + "e" + exponent;
 		}
+		return parseFloat(number);	
 	},
-
 
 	memToJSON: function() {
 		var obj = {};
@@ -853,11 +873,11 @@ var Calculator = Class.create({
 				}
 				break;
 
-
 				case 'sto':
 				if(this.mode_g == true) {
 					var meanx = this.memoryregisters['r3'] / this.memoryregisters['r2'];
 					var meany = this.memoryregisters['r5'] / this.memoryregisters['r2'];
+	
 					this.Stack.pushX();
 					this.Stack.pushX();
 					this.Stack.cards[0] = meanx;
@@ -1087,12 +1107,12 @@ var Calculator = Class.create({
 				this.lastx = this.Stack.cards[0];
 				if(this.mode_g == true) {
 					// LN
-					this.Stack.cards[0] = Math.log(this.Stack.cards[0]);
+					this.Stack.cards[0] = this.round(Math.log(this.Stack.cards[0]));
 					this.operationDone = 1;
 				}
 				else {
 					// e^x
-					this.Stack.cards[0] = Math.pow(2.718281828459045, this.Stack.cards[0]);
+					this.Stack.cards[0] = this.round(Math.pow(Math.E, this.Stack.cards[0]));
 				}
 				this.resetModes();
 				this.displayBuffer = this.Stack.cards[0].toString();
@@ -1102,11 +1122,11 @@ var Calculator = Class.create({
 				this.lastx = this.Stack.cards[0];
 				if(this.mode_g == true) {
 					//log
-					this.Stack.cards[0] = Math.log(parseFloat(this.Stack.cards[0]))/(Math.LN10 - 0.00000000000000001);
+					this.Stack.cards[0] = this.round(Math.log(parseFloat(this.Stack.cards[0]))/(Math.LN10));
 				}
 				else {
 					// 10^x
-					this.Stack.cards[0] = Math.pow(10, this.Stack.cards[0]);
+					this.Stack.cards[0] = this.round(Math.pow(10, this.Stack.cards[0]));
 				}
 				this.resetModes();
 				this.displayBuffer = this.Stack.cards[0].toString();
@@ -1314,11 +1334,11 @@ var Calculator = Class.create({
 				case 'xsquare':
 				this.lastx = this.Stack.cards[0];
 				if(this.mode_g == true) {
-					this.Stack.cards[0] = Math.pow(this.Stack.cards[0], 3);
+					this.Stack.cards[0] = this.round(Math.pow(this.Stack.cards[0], 3));
 					this.resetModes();
 				}
 				else {
-					this.Stack.cards[0] = Math.pow(this.Stack.cards[0], 2);
+					this.Stack.cards[0] = this.round(Math.pow(this.Stack.cards[0], 2));
 				}
 				this.displayBuffer = this.Stack.cards[0].toString();
 				this.operationDone = 1;
