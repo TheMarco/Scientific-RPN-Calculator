@@ -1240,11 +1240,12 @@ var Calculator = Class.create({
 				}
 				break;
 				case 'sin':
+				console.log(this.cmode);
 				// asin
 				this.lastx = this.Stack.cards[0];
 				if(this.mode_g == true) {
 					if(this.mode_hyp) {	
-						this.Stack.cards[0] = Math.log(this.Stack.cards[0] + Math.sqrt(this.Stack.cards[0]*this.Stack.cards[0]+1)) / this.conversion;
+						this.Stack.cards[0] = Math.log(this.Stack.cards[0] + Math.sqrt(this.Stack.cards[0]*this.Stack.cards[0]+1));
 					}
 					else {
 						this.Stack.cards[0] = Math.asin(this.Stack.cards[0]) / this.conversion;
@@ -1252,10 +1253,10 @@ var Calculator = Class.create({
 				}
 				else {
 					if(this.mode_hyp) {						
-						this.Stack.cards[0] = ((Math.exp(this.Stack.cards[0]) - Math.exp(-(this.Stack.cards[0]))) / 2) * this.conversion;
+						this.Stack.cards[0] = ((Math.exp(this.Stack.cards[0]) - Math.exp(-(this.Stack.cards[0]))) / 2);
 					}
 					else {
-						if(this.Stack.cards[0] == Math.PI) {							
+						if((parseInt(this.Stack.cards[0] / Math.PI) == this.Stack.cards[0] / Math.PI) && this.cmode == 'rad') {							
 							this.Stack.cards[0] = 0;
 						}
 						else {
@@ -1271,7 +1272,7 @@ var Calculator = Class.create({
 				this.lastx = this.Stack.cards[0];
 				if(this.mode_g == true) {
 					if(this.mode_hyp) {
-						this.Stack.cards[0] = (Math.log(this.Stack.cards[0] + Math.sqrt(this.Stack.cards[0]*this.Stack.cards[0]-1))) / this.conversion;
+						this.Stack.cards[0] = (Math.log(this.Stack.cards[0] + Math.sqrt(this.Stack.cards[0]*this.Stack.cards[0]-1)));
 					}
 					else {
 						this.Stack.cards[0] = Math.acos(this.Stack.cards[0]) / this.conversion;						
@@ -1279,10 +1280,15 @@ var Calculator = Class.create({
 				}
 				else {	
 					if(this.mode_hyp) {
-						this.Stack.cards[0] = ((Math.exp(this.Stack.cards[0]) + Math.exp(-(this.Stack.cards[0])))/2) * this.conversion;
+						this.Stack.cards[0] = ((Math.exp(this.Stack.cards[0]) + Math.exp(-(this.Stack.cards[0])))/2);
 					}
 					else {
-						this.Stack.cards[0] = Math.cos(this.Stack.cards[0] * this.conversion);						
+						if((parseInt(this.Stack.cards[0] / Math.PI) == this.Stack.cards[0] / Math.PI) && this.cmode == 'rad') {							
+							this.Stack.cards[0] = -1;
+						}
+						else {
+							this.Stack.cards[0] = Math.cos(this.Stack.cards[0] * this.conversion);	
+							}					
 					}
 				}
 				this.resetModes();
@@ -1293,7 +1299,7 @@ var Calculator = Class.create({
 				this.lastx = this.Stack.cards[0];
 				if(this.mode_g == true) {
 					if(this.mode_hyp) {
-						this.Stack.cards[0] = (0.5 * Math.log((1+this.Stack.cards[0])/(1-this.Stack.cards[0]))) / this.conversion;
+						this.Stack.cards[0] = (0.5 * Math.log((1+this.Stack.cards[0])/(1-this.Stack.cards[0])));
 					}
 					else {
 						this.Stack.cards[0] = Math.atan(this.Stack.cards[0]) / this.conversion;	
@@ -1301,7 +1307,7 @@ var Calculator = Class.create({
 				}
 				else {
 					if(this.mode_hyp) {
-						this.Stack.cards[0] = (Math.exp(this.Stack.cards[0]) - Math.exp(-(this.Stack.cards[0]))) / (Math.exp(this.Stack.cards[0]) + Math.exp(-(this.Stack.cards[0]))) * this.conversion;
+						this.Stack.cards[0] = (Math.exp(this.Stack.cards[0]) - Math.exp(-(this.Stack.cards[0]))) / (Math.exp(this.Stack.cards[0]) + Math.exp(-(this.Stack.cards[0])));
 					}
 					else {
 						this.Stack.cards[0] = Math.tan(this.Stack.cards[0] * this.conversion);
