@@ -7,6 +7,7 @@ DO NOT DISTRIBUTE Palm .ipk PACKAGES OF THIS SOFTWARE
 
 var Calculator = Class.create({
 	initialize: function() {
+		console.log('init!');
 		this.operationDone = 1;
 		this.fullscreen = false;
 		this.enterPressed = 0;
@@ -272,37 +273,39 @@ var Calculator = Class.create({
 	},
 
 	round: function(number) {
-		var splittedNumber = number.toExponential().split("e"), 
-		mantissa, 
-		exponent, 
-		lastDigit, 
-		sign, 
-		count;
-		mantissa = splittedNumber[0];
-		exponent = splittedNumber[1];
-		if (mantissa[0] == '-') {
-			sign = '-';
-			mantissa = mantissa.substr(1);
-		} else {
-			sign = ''
-		}
-		if (mantissa.length <= 12) {
+		
+		// Still somewhat experimental and messy but it works pretty well so far
+		// and at least now I can't get accused of having stolen someone else's code
+		
+		var originalnumber = number;
+		var str = number.toExponential().toString();
+		var splittedString = str.split('e');
+		if(splittedString[0].length <= 12) {
 			return number;
 		}
-		mantissa = mantissa.substr(0, 12 + 1);
-		exponent = (parseFloat(exponent) - mantissa.length + 2) + "";
-		mantissa = mantissa.split('.').join('');
-		count = 1;
-		lastDigit = mantissa.substr(-1);
-		while (count <= 4 && (mantissa.substr(-(++count), 1) == lastDigit)) {};
-		if (--count >= 3) {
-			mantissa = mantissa + '.' + mantissa.substr(-count);
-			while (mantissa.length < 18) {
-				mantissa = mantissa + mantissa.substr(-count);
-			} 
-			number = sign + mantissa + "e" + exponent;
+		var splittedMantissa = splittedString[0].split('.');
+		var largestnumber, largest, number, num, items;
+		firstBit = splittedMantissa[1].substr(0, splittedMantissa[1].length - 4);
+		lastBit = splittedMantissa[1].substr(splittedMantissa[1].length - 4, splittedMantissa[1].length);
+		largest = 0;
+		items = {};
+		for(j=0;j<4;j++) {
+			if(items['n' + lastBit.substr(j,1)]) {
+				items['n' + lastBit.substr(j,1)]++;
+				if(largest < items['n' + lastBit.substr(j,1)]) {
+					largest = items['n' + lastBit.substr(j,1)];
+					largestnumber = lastBit.substr(j,1);
+				}
+			}
+			else {
+				items['n' + lastBit.substr(j,1)] = 1;
+			}
+		}	
+		if(largest < 3) {
+			return originalnumber;
 		}
-		return parseFloat(number);	
+		result = splittedMantissa[0] + '.' + firstBit.toString() + largestnumber.toString() + largestnumber.toString() + largestnumber.toString() + largestnumber.toString() + largestnumber.toString() + 'e' + splittedString[1];
+		return parseFloat(result);
 	},
 
 	memToJSON: function() {
@@ -353,7 +356,6 @@ var Calculator = Class.create({
 				this.stopressed = false;
 				$('mode_sto').removeClassName('on');
 				this.operationDone = 1;
-				//FOOOO
 			}
 			if(type == 'minus' || type == 'plus' || type == 'divide' || type== 'multiply') {
 				this.stoarithmetic = type;
@@ -1241,7 +1243,7 @@ var Calculator = Class.create({
 				// asin
 				this.lastx = this.Stack.cards[0];
 				if(this.mode_g == true) {
-					if(this.mode_hyp) {			
+					if(this.mode_hyp) {	
 						this.Stack.cards[0] = Math.log(this.Stack.cards[0] + Math.sqrt(this.Stack.cards[0]*this.Stack.cards[0]+1)) / this.conversion;
 					}
 					else {
@@ -1250,11 +1252,10 @@ var Calculator = Class.create({
 				}
 				else {
 					if(this.mode_hyp) {						
-						this.Stack.cards[0] = ((Math.exp(this.Stack.cards[0]) - Math.exp(-(this.Stack.cards[0])))/2) * this.conversion;
-
+						this.Stack.cards[0] = ((Math.exp(this.Stack.cards[0]) - Math.exp(-(this.Stack.cards[0]))) / 2) * this.conversion;
 					}
 					else {
-						if(this.Stack.cards[0] == Math.PI) {
+						if(this.Stack.cards[0] == Math.PI) {							
 							this.Stack.cards[0] = 0;
 						}
 						else {
@@ -1377,12 +1378,12 @@ var Calculator = Class.create({
 				case 'sqrt':
 				this.lastx = this.Stack.cards[0];
 				if(this.mode_g == true) {
-					this.Stack.cards[0] = Math.pow(this.Stack.cards[0], (1 / 3));
+					this.Stack.cards[0] = this.round(Math.pow(this.Stack.cards[0], (1 / 3)));
 					this.displayBuffer = this.Stack.cards[0].toString();
 					this.resetModes();
 				}
 				else {
-					this.Stack.cards[0] = Math.sqrt(this.Stack.cards[0]);
+					this.Stack.cards[0] = this.round(Math.sqrt(this.Stack.cards[0]));
 					this.displayBuffer = this.Stack.cards[0].toString();
 				}
 				this.operationDone = 1;
