@@ -1,6 +1,6 @@
 {
     "title": "Scientific RPN Calculator",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "type": "web",
     "main": "index.html",
     "id": "nl.i-marco.app.scientificcalculatorapp",

@@ -55,6 +55,87 @@ var Calculator = Class.create({
 		this.setupMemDb();
 		this.Stack = {
 			cards: Array(0,0,0,0,0),
+			undostack: Array(0,0,0,0,0),			
+			maintain: function() {
+				var count = this.cards.length - 1;
+				var finalLength;
+				while((this.cards[count] == 0) && count > -1) {
+					this.cards.pop();
+					count--;
+				}
+				finalLength = this.cards.length;
+				if(finalLength < 5) {
+					for(i=0;i<5-finalLength;i++) {
+						this.cards.push(0);
+					}
+				}
+			},	
+			update: function(list) {
+				this.fillundostack();
+				this.cards[0] = list[4];
+				this.cards[1] = list[3];
+				this.cards[2] = list[2];
+				this.cards[3] = list[1];
+				this.cards[4] = list[0];
+				this.stackDump();	
+			},		
+			fillundostack: function() {
+				this.undostack = this.cards;
+			},
+			pushX: function() {
+				console.log('pushX');
+				this.fillundostack();
+				this.cards.unshift(this.cards[0]);
+				this.maintain();
+				this.stackDump();
+			},
+			dropOne: function(data) {
+				this.fillundostack();
+				this.cards.shift();
+				this.cards[0] = data;
+				this.maintain();
+				this.stackDump();
+			},
+			rollUp: function() {
+				this.fillundostack();
+				var removedElement = this.cards.pop();
+				this.cards.unshift(removedElement);	
+				this.stackDump();	
+			},
+			rollDown: function() {		
+				this.fillundostack();
+				var removedElement = this.cards.shift();
+				this.cards.push(removedElement);
+				this.stackDump();	
+			},
+			clst: function() {
+				this.fillundostack();
+				this.cards = Array(0,0,0,0,0);
+				this.stackDump();	
+			},
+			swapxy: function() {
+				this.undostack = this.cards;
+				var temp = this.cards[0];
+				this.cards[0] = this.cards[1];
+				this.cards[1] = temp;
+				this.stackDump();	
+			},
+			undo: function() {
+				this.stackDump();
+				this.cards = this.undostack;
+				this.stackDump();
+			},
+			stackDump: function() {
+				var output = 'stack dump: ';
+				for(i=0;i<this.cards.length;i++) {
+					output = output + ' ' + this.cards[i];
+				}
+				console.log(output);
+			}
+		};	
+		/*
+		this.oldStack = {
+			cards: Array(0,0,0,0,0),
 			undostack: Array(0,0,0,0,0),
 			update: function(list) {
 				this.fillundostack();
@@ -139,7 +220,8 @@ var Calculator = Class.create({
 				}
 				//console.log(output);
 			}
-		};		
+		};
+		*/
 	},
 
 	setHapticPrefs: function(value) {
