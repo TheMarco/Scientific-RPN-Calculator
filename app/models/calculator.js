@@ -357,36 +357,41 @@ var Calculator = Class.create({
 	round: function(number) {
 		
 		// Still somewhat experimental and messy but it works pretty well so far
-		// and at least now I can't get accused of having stolen someone else's code
 		
-		var originalnumber = number;
-		var str = number.toExponential().toString();
-		var splittedString = str.split('e');
+		var largestnumber, 
+		largest, 
+		number, 
+		num, 
+		items,
+		str, 
+		splittedString,
+		firstPart,
+		lastPart,
+		splittedString = number.toExponential().toString().split('e');
 		if(splittedString[0].length <= 12) {
 			return number;
 		}
 		var splittedMantissa = splittedString[0].split('.');
-		var largestnumber, largest, number, num, items;
-		firstBit = splittedMantissa[1].substr(0, splittedMantissa[1].length - 4);
-		lastBit = splittedMantissa[1].substr(splittedMantissa[1].length - 4, splittedMantissa[1].length);
-		largest = 0;
+		firstPart = splittedMantissa[1].substr(0, splittedMantissa[1].length - 4);
+		lastPart = splittedMantissa[1].substr(splittedMantissa[1].length - 4, splittedMantissa[1].length);
+		mostCommonOccurrences = 0;
 		items = {};
 		for(j=0;j<4;j++) {
-			if(items['n' + lastBit.substr(j,1)]) {
-				items['n' + lastBit.substr(j,1)]++;
-				if(largest < items['n' + lastBit.substr(j,1)]) {
-					largest = items['n' + lastBit.substr(j,1)];
-					largestnumber = lastBit.substr(j,1);
+			if(items['n' + lastPart.substr(j,1)]) {
+				items['n' + lastPart.substr(j,1)]++;
+				if(mostCommonOccurrences < items['n' + lastPart.substr(j,1)]) {
+					mostCommonOccurrences = items['n' + lastPart.substr(j,1)];
+					largestnumber = lastPart.substr(j,1);
 				}
 			}
 			else {
-				items['n' + lastBit.substr(j,1)] = 1;
+				items['n' + lastPart.substr(j,1)] = 1;
 			}
 		}	
-		if(largest < 3) {
-			return originalnumber;
+		if(mostCommonOccurrences < 2) {
+			return number;
 		}
-		result = splittedMantissa[0] + '.' + firstBit.toString() + largestnumber.toString() + largestnumber.toString() + largestnumber.toString() + largestnumber.toString() + largestnumber.toString() + 'e' + splittedString[1];
+		result = splittedMantissa[0] + '.' + firstPart.toString() + largestnumber.toString() + largestnumber.toString() + largestnumber.toString() + largestnumber.toString() + largestnumber.toString() + largestnumber.toString() + 'e' + splittedString[1];
 		return parseFloat(result);
 	},
 
